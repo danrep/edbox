@@ -1,0 +1,167 @@
+﻿@using EdBox.Web.Models
+@{
+    if (!UserInformation.IsSessionValid)
+    {
+        Response.Redirect(Url.Action("LogOut", "Home", new { area = "" }));
+    }
+}
+
+<!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+
+<html lang="en">
+<head>
+    <title>EdBox | @UserInformation.RoleName: @ViewBag.Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="icon" href="/ViewElements/img/EdBoxLogoOnly.png" type="image/x-icon" />
+    <link rel="stylesheet" type="text/css" href="/ViewElements/css/ion/ion.rangeSlider.css" />
+    <link rel="stylesheet" type="text/css" href="/ViewElements/css/ion/ion.rangeSlider.skinFlat.css" />
+    <link rel="stylesheet" type="text/css" id="theme" href="/ViewElements/css/theme-default.css" />
+</head>
+<body>
+    <div id="edBoxAngularApp" ng-app="edBox" ng-controller="edBoxCtrlr">
+        <div class="page-container">
+            <div class="page-sidebar">
+                <ul class="x-navigation">
+                    <li class="xn-logo">
+                        <a href="@Url.Action("Index", "Home", new {area = ""})">EdBox</a>
+                        <a href="#" class="x-navigation-control"></a>
+                    </li>
+                    <li class="xn-profile">
+                        <div class="profile">
+                            <div class="profile-data">
+                                <div class="profile-data-name">@UserInformation.UserInformationCredential.LastName, @UserInformation.UserInformationCredential.FirstName</div>
+                                <div class="profile-data-title">@UserInformation.RoleName</div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Index", "Home", new {area = UserInformation.Route})"><span class="fa fa-home"></span> <span class="xn-text">Home</span></a>
+                    </li>
+                    @RenderPage($"~/Views/Shared/Menus/{UserInformation.Route}Menu.cshtml")
+
+                    @if (UserInformation.HasClassToManage)
+                    {
+                        @RenderPage($"~/Views/Shared/Menus/EducationManagementMenu.cshtml")
+                    }
+                    @if (UserInformation.HasStudentsToManage)
+                    {
+                        @RenderPage($"~/Views/Shared/Menus/StudentManagementMenu.cshtml")
+                    }
+                </ul>
+            </div>
+            <div class="page-content">
+                <ul class="x-navigation x-navigation-horizontal x-navigation-panel">
+                    <li class="xn-icon-button">
+                        <a href="#" class="x-navigation-minimize"><span class="fa fa-dedent"></span></a>
+                    </li>
+
+                    <li class="xn-icon-button pull-right last">
+                        <a href="#"><span class="fa fa-power-off"></span></a>
+                        <ul class="xn-drop-left animated zoomIn">
+                            @if (UserInformation.UserInformationCredential.Id != 0)
+                            {
+                                <li><a href="@Url.Action("ChangePassword", "Security", new {area = ""})"><span class="fa fa-lock"></span> Change Password</a></li>
+                            }
+                            <li><a href="#" class="mb-control" data-box="#mb-signout"><span class="fa fa-sign-out"></span> Sign Out</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <div class="page-content-wrap">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">@ViewBag.Title</h3>
+                                </div>
+                                <div class="panel-body">
+                                    @RenderBody()
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="message-box animated fadeIn" data-sound="alert" id="mb-signout">
+            <div class="mb-container">
+                <div class="mb-middle">
+                    <div class="mb-title">
+                        <span class="fa fa-sign-out"></span> Log <strong>Out</strong> ?
+                    </div>
+                    <div class="mb-content">
+                        <p>Are you sure you want to log out?</p>
+                        <p>Press No if youwant to continue work. Press Yes to logout current user.</p>
+                    </div>
+                    <div class="mb-footer">
+                        <div class="pull-right">
+                            <a href="@Url.Action("LogOut", "Home", new {area = ""})" class="btn btn-success btn-lg">Yes</a>
+                            <button class="btn btn-default btn-lg mb-control-close">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="audio-alert" src="/ViewElements/audio/alert.mp3" preload="auto"></audio>
+    <audio id="audio-fail" src="/ViewElements/audio/fail.mp3" preload="auto"></audio>
+
+    <script type="text/javascript" src="/ViewElements/js/plugins/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/jquery/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/Scripts/angular.min.js"></script>
+    <script type="text/javascript" src="/Scripts/global.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/bootstrap/bootstrap.min.js"></script>
+
+    <script type='text/javascript' src='/ViewElements/js/plugins/icheck/icheck.min.js'></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js"></script>
+    <script type='text/javascript' src='/ViewElements/js/plugins/noty/jquery.noty.js'></script>
+    <script type='text/javascript' src='/ViewElements/js/plugins/noty/layouts/topCenter.js'></script>
+    <script type='text/javascript' src='/ViewElements/js/plugins/noty/layouts/topLeft.js'></script>
+    <script type='text/javascript' src='/ViewElements/js/plugins/noty/layouts/topRight.js'></script>
+
+    <script type="text/javascript" src="/ViewElements/js/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/tableexport/tableExport.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/tableexport/jquery.base64.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/tableexport/html2canvas.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/tableexport/jspdf/libs/sprintf.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/tableexport/jspdf/jspdf.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/tableexport/jspdf/libs/base64.js"></script>
+
+    <script type='text/javascript' src='/ViewElements/js/plugins/icheck/icheck.min.js'></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js"></script>
+    <script type='text/javascript' src='/ViewElements/js/plugins/bootstrap/bootstrap-datepicker.js'></script>
+    <script type='text/javascript' src='/ViewElements/js/plugins/bootstrap/bootstrap-select.js'></script>
+    <script type='text/javascript' src='/ViewElements/js/plugins/validationengine/languages/jquery.validationEngine-en.js'></script>
+    <script type='text/javascript' src='/ViewElements/js/plugins/validationengine/jquery.validationEngine.js'></script>
+    <script type='text/javascript' src='/ViewElements/js/plugins/jquery-validation/jquery.validate.js'></script>
+    <script type='text/javascript' src='/ViewElements/js/plugins/maskedinput/jquery.maskedinput.min.js'></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/owl/owl.carousel.min.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/rangeslider/jQAllRangeSliders-min.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/knob/jquery.knob.min.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/ion/ion.rangeSlider.min.js"></script>
+
+    <script type="text/javascript" src="/ViewElements/js/plugins/bootstrap/bootstrap-file-input.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/tagsinput/jquery.tagsinput.min.js"></script>
+
+    <script type="text/javascript" src="/ViewElements/js/plugins/dropzone/dropzone.min.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/fileinput/fileinput.min.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/filetree/jqueryFileTree.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/cropper/cropper.min.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins/jstree/jstree.min.js"></script>
+
+    <script type="text/javascript" src="/ViewElements/js/plugins/slidingmenu/jquery-sliding-menu.js"></script>
+
+    <script type='text/javascript' src='/ViewElements/js/plugins/noty/themes/default.js'></script>
+    <script type="text/javascript" src="/ViewElements/js/plugins.js"></script>
+    <script type="text/javascript" src="/ViewElements/js/actions.js"></script>
+
+@RenderSection("Scripts", false)
+</body>
+</html>

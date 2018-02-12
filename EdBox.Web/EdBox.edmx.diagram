@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="1c1bc129ec534976b4017119c668ae43" Name="Diagram1">
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.Assessment" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.Bill" Width="1.5" PointX="2.75" PointY="0.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.Class" Width="1.5" PointX="4.75" PointY="0.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.ClassMap" Width="1.5" PointX="0.75" PointY="4.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.ClassSubject" Width="1.5" PointX="2.75" PointY="4.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.ClassSubjectMemberResult" Width="1.5" PointX="4.75" PointY="3.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.Credential" Width="1.5" PointX="6.75" PointY="0.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.CredentialMap" Width="1.5" PointX="6.75" PointY="4.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.EducationalPeriod" Width="1.5" PointX="4.75" PointY="7.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.PinBatch" Width="1.5" PointX="6.75" PointY="7.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.PinBatchMember" Width="1.5" PointX="8.75" PointY="0.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.ResultRaw" Width="1.5" PointX="0.75" PointY="8.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.Student" Width="1.5" PointX="8.75" PointY="4.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.StudentAttendance" Width="1.5" PointX="8.75" PointY="9.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.StudentCommentFromTeacher" Width="1.5" PointX="10.75" PointY="0.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.StudentRating" Width="1.5" PointX="2.75" PointY="10.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.StudentSubjectMap" Width="1.5" PointX="10.75" PointY="4.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.SubEducationalPeriod" Width="1.5" PointX="4.75" PointY="10.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.SubjectMap" Width="1.5" PointX="10.75" PointY="7.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.Transaction" Width="1.5" PointX="10.75" PointY="10.75" />
+        <EntityTypeShape EntityType="EdBox.DatabaseModel.UploadHistory" Width="1.5" PointX="12.75" PointY="0.75" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

@@ -1,0 +1,295 @@
+﻿@using System.Data.Entity.Core.Objects
+@using EdBox.Core
+@using EdBox.Core.EnumLib
+@model List<Student>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EdBox Result Engine: @ViewBag.ResultName</title>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" href="/ViewElements/img/EdBoxLogoOnly.png" type="image/x-icon" />
+    <link rel="stylesheet" type="text/css" media="all" id="theme" href="/ViewElements/css/theme-default.css" />
+
+    <style media="all">
+        body {
+            width: 210mm;
+            zoom: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .h6 {
+            font-weight: 100;
+        }
+
+        .tableDiv {
+            vertical-align: top;
+        }
+
+        th.rotate {
+            /* Something you can count on */
+            height: 150px;
+            white-space: nowrap;
+        }
+
+        th.rotate > div {
+            -webkit-transform: translate(-5px, 0px) rotate(270deg);
+            -moz-transform: translate(-5px, 0px) rotate(270deg);
+            -ms-transform: translate(-5px, 0px) rotate(270deg);
+            -o-transform: translate(-5px, 0px) rotate(270deg);
+            transform: translate(-5px, 0px) rotate(270deg);
+            width: 10px;
+        }
+
+        th.rotate > div > span {
+            border-bottom: 1px solid #ccc;
+            padding: 5px 10px;
+        }
+
+        .csstransforms, th.rotate {
+            height: 150px;
+            white-space: nowrap;
+        }
+
+        tbody > tr > td {
+            padding: 4px 7px !important;
+        }
+    </style>
+</head>
+<body>
+    @foreach (var student in Model)
+    {
+        Layout = null;
+        var data = new Entities();
+        var session = data.EducationalPeriods.FirstOrDefault(x => x.IsActive && !x.IsDeleted);
+        var subSession = data.SubEducationalPeriods.FirstOrDefault(x => x.IsActive && x.EducationalPeriodId == session.Id);
+        var assessments = data.Assessments.Where(x => x.IsDeleted == false).OrderBy(x => x.AssessmentType).ToList();
+        var results = data.ResultRaws.Where(x => x.SessionId == session.Id && x.StudentId == student.StudentId &&
+                                                 x.SubSessionId == subSession.Id && x.ClassId == student.CurrentClassId && x.IsDeleted == false).ToList();
+
+        var studentSubjects = data.StudentSubjectMaps
+            .Where(x => x.StudentId == student.StudentId && x.IsDeleted == false)
+            .ToList()
+            .Select(x => new {x, SubjectName = ((Subjects) x.SubjectId).DisplayName()})
+            .OrderBy(x => x.SubjectName).ToList();
+
+        var totalCummulativeScore = 0.0m;
+        var cummulativeAverageScore = 0.0m;
+
+        var isSession = Convert.ToBoolean(Session["IsSession"]);
+        var position = data.GetStudentPosition(student.StudentId, student.CurrentClassId, isSession).FirstOrDefault();
+
+        <div class="row">
+            <div>
+                <table style="margin-top: 10px; margin-bottom: 10px; width: 100%">
+                    <tr>
+                        <td style="width: 25px;">
+                            <img alt="logo" src="../../../../ViewElements/img/EdBoxLogoOnly.png"/>
+                        </td>
+                        <td style="width: 50px; text-align: center">
+                            <span>Term</span>
+                            <h4><strong>@(subSession?.SubPeriodName)</strong></h4>
+                            <span>Session</span>
+                            <h5><strong>@(session?.PeriodName)</strong></h5>
+                        </td>
+                        <td style="width: 25px; text-align: right">
+                            <img src="data:image/png;base64,@student.StudentImage" alt="studentImage" width="50"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <hr class="btn btn-default btn-sm btn-block" style="margin-top: 10px; margin-bottom: 10px;"/>
+            <div style="line-height: 10px; width: 100%">
+                <table style="margin-top: 10px; margin-bottom: 10px; width: 100%">
+                    <tr>
+                        <td class="tableDiv" style="width: 50px;">
+                            <p>
+                                Name: <strong>@student.StudentSurname, @student.StudentOtherName</strong>
+                            </p>
+                            <p>
+                                Sex: <strong></strong>
+                            </p>
+                            <p>
+                                Student Number: <strong>@student.StudentId</strong>
+                            </p>
+                            <p>
+                                S.S: <strong></strong>
+                            </p>
+                            <p>
+                                House: <strong></strong>
+                            </p>
+                        </td>
+                        <td class="tableDiv" style="width: 50px; text-align: right;">
+                            <div style="top: 3px;">
+                                <p>
+                                    Position: <strong>@(Computation.AddOrdinal(position.Id))</strong>
+                                </p>
+                                <p>
+                                    Total Score: <strong>@(position.Score?.ToString("0.00"))</strong>
+                                </p>
+                                <p>
+                                    Cum.Average:
+                                    @if (studentSubjects.Count == 0 || position.Score == 0)
+                                    {
+                                        <strong>0.00</strong>
+                                    }
+                                    else
+                                    {
+                                        <strong>@((position.Score/studentSubjects.Count)?.ToString("0.00"))</strong>
+                                    }
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <hr class="btn btn-default btn-sm btn-block" style="margin-top: 10px; margin-bottom: 10px;"/>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table style="margin-top: 10px; margin-bottom: 10px; width: 100%">
+                    <tr>
+                        <td class="tableDiv" style="width: 80px;">
+                            <h5>PART A: Performace in Subjects</h5>
+                            <div class="panel panel-default">
+                                <table class="table table-condensed table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th></th>
+                                        @foreach (var assessment in assessments)
+                                        {
+                                            <th class="rotate">
+                                                <div>
+                                                    @assessment.AssessmentName @assessment.AssmentPercentage.ToString("0")%
+                                                </div>
+                                            </th>
+                                        }
+                                        <th class="rotate">
+                                            <div>Total</div>
+                                        </th>
+                                        <th class="rotate">
+                                            <div>Grade</div>
+                                        </th>
+                                        <th class="rotate">
+                                            <div>Average</div>
+                                        </th>
+                                        <th class="rotate">
+                                            <div>Highest Score</div>
+                                        </th>
+                                        <th class="rotate">
+                                            <div>Term Score</div>
+                                        </th>
+                                        <th class="rotate">
+                                            <div>Teacher's Sign</div>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    @{
+                                        foreach (var studentSubject in studentSubjects)
+                                        {
+                                            var totalScore = 0.0m;
+                                            <tr>
+                                                <td>@studentSubject.SubjectName</td>
+                                                @foreach (var assessment in assessments)
+                                                {
+                                                    var score = results.FirstOrDefault(x => x.AssessmentId == assessment.Id && x.SubjectId == studentSubject.x.SubjectId)?.ScoreObtained ?? 0;
+                                                    <td>@(score.ToString("0.00"))</td>
+                                                    totalScore += score;
+                                                }
+                                                <td>@totalScore.ToString("0.00")</td>
+                                                <td>@Computation.GetGrade(totalScore)</td>
+                                                <td>
+                                                    @{
+                                                        var ave = totalScore/assessments.Count;
+                                                        totalCummulativeScore += totalScore;
+                                                    }
+                                                    @ave.ToString("0.00")
+                                                </td>
+                                                <td>0</td>
+                                                <td>0</td>
+                                                <td>...</td>
+                                            </tr>
+                                        }
+                                        if (studentSubjects.Count == 0 || totalCummulativeScore == 0)
+                                        {
+                                            cummulativeAverageScore = 0;
+                                        }
+                                        else
+                                        {
+                                            cummulativeAverageScore = totalCummulativeScore/studentSubjects.Count;
+                                        }
+                                    }
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                        <td class="tableDiv" style="width: 20px;">
+                            <h5>PART B: Student Ratings</h5>
+                            <div class="panel panel-default">
+                                <table class="table table-condensed table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                            <div>Behaviour</div>
+                                        </th>
+                                        <th>
+                                            <div>Ratings</div>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>Punctuality</td>
+                                        <td>3</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Attendance</td>
+                                        <td>1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Bravery</td>
+                                        <td>3</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <div class="col-md-9">
+                </div>
+                <div class="col-md-3">
+                </div>
+            </div>
+            <hr class="btn btn-default btn-sm btn-block" style="margin-top: 10px; margin-bottom: 10px;"/>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-9">
+                    <p>
+                        Total Number of Days School Opened: <strong></strong>
+                    </p>
+                    <p>
+                        No of Days Present: <strong></strong> | No of Days Absent: <strong></strong>
+                    </p>
+                    <p>
+                        Form Master's Comment: <strong></strong>
+                    </p>
+                    <p>
+                        House Master's Comment: <strong></strong>
+                    </p>
+                    <p>
+                        Principal's Comment: <strong></strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <hr style="page-break-after: always"/>
+    }
+</body>
+</html>

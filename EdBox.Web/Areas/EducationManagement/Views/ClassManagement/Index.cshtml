@@ -1,0 +1,103 @@
+﻿
+@{
+    ViewBag.Title = "Class Overview";
+    Layout = "~/Views/Shared/_ApplicationLayout.cshtml";
+
+    var data = new Entities();
+}
+
+<div class="row">
+    <div class="col-md-4 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Active Parameters</h3>
+            </div>
+            <div class="panel-body">
+                @{
+                    var activeSession = data.EducationalPeriods.FirstOrDefault(x => x.IsActive);
+                    if (activeSession == null)
+                    {
+                        <div class="alert alert-danger">
+                            No Active Session Set
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-success">
+                            Current Session: <strong>@activeSession.PeriodName</strong>
+                        </div>
+                        var activeSubSession = data.SubEducationalPeriods.FirstOrDefault(x => x.IsActive && x.EducationalPeriodId == activeSession.Id);
+                        if (activeSubSession == null)
+                        {
+                            <div class="alert alert-warning">
+                                No Active Sub Session Set
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info">
+                                Current Sub Session: <strong>@activeSubSession.SubPeriodName</strong>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Classes Assigned to You</h3>
+            </div>
+            <div class="panel-body">
+                <div class="btn-group" ng-repeat="classMap in Helm.Classes track by $index">
+                    <button class="btn btn-sm btn-success" style="margin: 5px;">{{classMap.ClassName}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Subjects Assigned to You</h3>
+            </div>
+            <div class="panel-body">
+                <div class="btn-group" ng-repeat="subjectMap in Helm.Subjects track by $index">
+                    <button class="btn btn-sm btn-info" style="margin: 5px;">{{subjectMap.SubjectName}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        edBox.controller('edBoxCtrlr', function ($scope) {
+            $scope.Helm = {};
+            $scope.SelectedSubject = "0";
+            $scope.SelectedClass = "0";
+
+            $scope.LoadHelm = function() {
+                window.notyDisplay('', 'Loading... ', 'warning');
+
+                $.ajax({
+                        type: "GET",
+                        url: "/ApiClassManagement/GetHelm",
+                        async: false
+                    })
+                    .success(function(data) {
+                        if (data.Status === true) {
+                            window.notyDisplay('', data.Message, 'success');
+                            $scope.Helm = data.Data;
+                        } else {
+                            window.notyDisplay('', data.Message, 'warning');
+                        }
+                    })
+                    .error(function(data) {
+                        window.notyEx();
+                    });
+            };
+            $scope.LoadHelm();
+        });
+    </script>
+}

@@ -1,0 +1,34 @@
+﻿@using EdBox.Core
+@using EdBox.Web.Models
+@{
+    var data = new Entities();
+    var mappedClasses = data.ClassMaps.Where(x => x.CredentialId == UserInformation.UserInformationCredential.Id).ToList();
+    var classes = data.Classes.Where(x => x.IsDeleted == false).ToList();
+}
+<li class="xn-title">Education Management</li>
+<li class="xn-openable">
+    <a href="#"><span class="fa fa-cogs"></span> <span class="xn-text">Class Management</span></a>
+    <ul>
+        <li><a href="@Url.Action("Index", "ClassManagement", new {area = "EducationManagement"})"><span class="fa fa-dashboard"></span> Class Overview</a></li>
+        @foreach (var classSubject in mappedClasses)
+        {
+            <li class="xn-openable">
+                <a href="#"><span class="fa fa-building-o"></span> <span class="xn-text">@(classes.FirstOrDefault(x => x.Id == classSubject.ClassId)?.ClassName ?? "Deleted Class")</span></a>
+                <ul>
+                    <li>
+                        <a href="@Url.Action("ClassOperations", "ClassManagement", new {area = "EducationManagement", classId = classSubject.ClassId})"><span class="fa fa-bars"></span> Manage Class</a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("PrintResult", "Results", new {area = "StudentManagement", classId = classSubject.ClassId, isSession = false, key = Encryption.SaltEncrypt(UserInformation.UserInformationCredential.Username, DateTime.Now.ToString("YYYYMMDD"))})" target="_blank"><span class="fa fa-print"></span>&nbsp;Sub Edu Period Class Result</a>
+                    </li>
+                </ul>
+            </li>
+        }
+    </ul>
+</li>
+<li class="xn-openable">
+    <a href="#"><span class="fa fa-cogs"></span> <span class="xn-text">Result Management</span></a>
+    <ul>
+        <li><a href="@Url.Action("Index", "ResultManagement", new {area = "EducationManagement"})"><span class="fa fa-dashboard"></span> Result Overview</a></li>
+    </ul>
+</li>

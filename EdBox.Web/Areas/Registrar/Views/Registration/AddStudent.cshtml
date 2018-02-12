@@ -1,0 +1,208 @@
+﻿@{
+    ViewBag.Title = "Add Registrant";
+    Layout = "~/Views/Shared/_ApplicationLayout.cshtml";
+}
+
+<div class="row">
+    <form id="validate" role="form" class="form-horizontal" action="javascript:addNewStudentForm();">
+        <div class="panel-body">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Student ID</label>
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="fa fa-graduation-cap"></span></span>
+                            <input type="text" id="studentId" class="validate[required,minSize[3]] form-control"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Surname</label>
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="fa fa-user"></span></span>
+                            <input type="text" id="surname" class="validate[required,minSize[3]] form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Other Names</label>
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="fa fa-user"></span></span>
+                            <input type="text" id="otherName" class="validate[required,minSize[3]] form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Home Address</label>
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="fa fa-home"></span></span>
+                            <input type="text" id="homeAddress" class="validate[required,minSize[3]] form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Passport Image</label>
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <span class="input-group-addon" data-toggle="modal" data-target="#modal_no_footer" style="cursor: pointer"><span class="fa fa-image"></span></span>
+                            <input type="text" id="passportImage" disabled="disabled" class="validate[required,minSize[3]] form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Guardian's Full Name</label>
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="fa fa-user"></span></span>
+                            <input type="text" id="pgFullName" class="validate[required,minSize[3]] form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Guardian's Email</label>
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="fa fa-envelope"></span></span>
+                            <input type="email" id="pgEmail" class="validate[required,minSize[3]] form-control" />
+                        </div>
+                        <span class="help-block"><i class="fa fa-warning text-warning"></i>&nbsp;This is the Username that will access the Student's Account.</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Guardian's Phone</label>
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="fa fa-phone"></span></span>
+                            <input type="number" id="pgPhone" class="validate[required,minSize[3]] form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Special Notes</label>
+                    <div class="col-md-9 col-xs-12">
+                        <textarea class="form-control" rows="4" id="briefInfo"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <div class="btn-group pull-right">
+                            <a class="btn btn-warning" href="@Url.Action("Index", "Registration")">Go Back</a>
+                            <button class="btn btn-primary" type="submit">Add Student</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal" id="modal_no_footer" tabindex="-1" role="dialog" aria-labelledby="defModalHead" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="defModalHead">Add Passport Image</h4>
+            </div>
+            <div class="modal-body">
+                <form action="@Url.Action("UploadImage", "ApiUtility", new {area=  ""})" method="post" enctype="multipart/form-data" class="dropzone dropzone-mini" id="dropzoneForm1">
+                    <div class="fallback">
+                        <input name="file" type="file" multiple />
+                        <input type="submit" value="Upload" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script>
+        edBox.controller('edBoxCtrlr', function ($scope) {
+
+            $scope.addNewStudent = function () {
+
+                var studentInformation = {
+                    StudentId: $('#studentId').val(),
+                    StudentSurname: $('#surname').val(),
+                    StudentOtherName: $('#otherName').val(),
+                    StudentHomeAddress: $('#homeAddress').val(),
+                    PgFullName: $('#pgFullName').val(),
+                    PgPhone: $('#pgPhone').val(),
+                    PgEmail: $('#pgEmail').val(),
+                    BriefInformation: $('#briefInfo').val(),
+                    StudentImage: $('#passportImage').val()
+                };
+
+                $.ajax({
+                        type: "POST",
+                        url: "/ApiRegistration/Registration",
+                        async: false,
+                        data: studentInformation
+                    })
+                    .success(function(data) {
+                        if (data.Status === true) {
+
+                            $('#studentId').val('');
+                            $('#surname').val('');
+                            $('#otherName').val('');
+                            $('#homeAddress').val('');
+                            $('#pgFullName').val('');
+                            $('#pgPhone').val('');
+                            $('#pgEmail').val('');
+                            $('#briefInfo').val('');
+                            $('#passportImage').val('');
+
+                            Dropzone.forElement("#dropzoneForm1").removeAllFiles(true);
+
+                            window.notyDisplay('', data.Message, 'success');
+                        } else {
+                            window.notyDisplay('', data.Message, 'warning');
+                        }
+                    })
+                    .error(function(data) {
+                        window.notyEx();
+                    });
+            };
+        });
+
+        function addNewStudentForm() {
+            getNgScope().addNewStudent();
+        };
+
+        Dropzone.options.dropzoneForm1 = {
+            maxFiles: 1,
+            maxFilesize: 100,
+            acceptedFiles: ".jpeg,.jpg,.png,.gif",
+            init: function() {
+                this.on("maxfilesexceeded", function(data) {
+                    window.notyDisplay('', data.Message, 'warning');
+                });
+
+                this.on("success", function(data) {
+                    window.notyDisplay('', 'File has been Uploaded Sucessfully', 'success');
+                    $('#passportImage').val(data.name);
+                });
+            }
+        };
+    </script>
+}

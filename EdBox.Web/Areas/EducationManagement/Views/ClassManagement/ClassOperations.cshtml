@@ -1,0 +1,273 @@
+﻿@using EdBox.Web.Models
+@model Class
+@{
+    ViewBag.Title = "Class Operations for " + Model.ClassName;
+    Layout = "~/Views/Shared/_ApplicationLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="widget widget-primary widget-item-icon">
+            <div class="widget-item-left">
+                <span class="fa fa-graduation-cap"></span>
+            </div>
+            <div class="widget-data">
+                <div class="widget-int num-count">{{TotalStudentsInClass}}</div>
+                <div class="widget-title">Students</div>
+                <div class="widget-subtitle">in your Class</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="widget widget-warning widget-carousel">
+            <div class="owl-carousel" id="owl-example">
+                <div>
+                    <div class="widget-title">Average Punctuality</div>
+                    <div class="widget-subtitle">This Month</div>
+                    <div class="widget-int">3.54</div>
+                </div>
+                <div>
+                    <div class="widget-title">Average Attendance</div>
+                    <div class="widget-subtitle">This Month</div>
+                    <div class="widget-int">1.95</div>
+                </div>
+            </div>
+        </div>   
+    </div>
+    <div class="col-md-4">
+        <div class="widget widget-danger widget-item-icon">
+            <div class="widget-item-left">
+                <span class="fa fa-clock-o"></span>
+            </div>
+            <div class="widget-data">
+                <div class="widget-big-int plugin-clock">00:00</div>
+                <div class="widget-subtitle plugin-date">Loading...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <div class="panel-title-box">
+                    <h3>Students in Class</h3>
+                    <span>Class Operations</span>
+                </div>
+            </div>
+            <div class="panel-body panel-body-table">
+                <div class="table-responsive">
+                    <table id="studentInformation" class="table table-condensed table-striped">
+                        <thead>
+                            <tr>
+                                <th>Student Id</th>
+                                <th>Full Name</th>
+                                <th>Control</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7" id="studentInformationPanel" style="display: none">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <div class="panel-title-box">
+                    <h3 id="sI_StudentId"></h3>
+                    <span>Student Information</span>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-6 col-xs-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body profile">
+                            <div class="profile-image">
+                                <img id="sI_StudentImage" src="" alt="">
+                            </div>
+                            <div class="profile-data">
+                                <div class="profile-data-name" id="sI_FullName">Select Student</div>
+                                <div class="profile-data-title" id="sI_BriefInfo" style="color: #FFF;">...</div>
+                            </div>
+                        </div>
+                        <div class="panel-body list-group border-bottom">
+                            <a href="#" class="list-group-item"><i class="fa fa-home"></i>:&nbsp;<span id="sI_HomeAddress"></span> </a>
+                            <a href="#" class="list-group-item"><i class="fa fa-user text-danger"></i>:&nbsp;<span id="sI_PGFullName"></span> </a>
+                            <a href="#" class="list-group-item"><i class="fa fa-envelope-o text-danger"></i>:&nbsp;<span id="sI_PGEmail"></span> </a>
+                            <a href="#" class="list-group-item"><i class="fa fa-phone text-danger"></i>:&nbsp;<span id="sI_PGPhone"></span> </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xs-12">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="panel-title-box">
+                                <h3>Teachers Comments</h3>
+                                <span>for @UserInformation.CurrentEducationalPeriod.PeriodName, @UserInformation.CurrentSubEducationalPeriod.SubPeriodName</span>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <textarea class="form-control" id="sI_TeachersComment">
+                                    
+                                </textarea>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <button class="btn btn-success btn-block" onclick="saveComment()">Save Comments</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        edBox.controller('edBoxCtrlr', function($scope) {
+            $scope.ListStudentsInClass = [];
+            $scope.TotalStudentsInClass = 0;
+            $scope.TodaysAttendance = 0;
+
+            $scope.Student = {};
+
+            $scope.GetTodaysAttendance = function() {
+                $.ajax({
+                        type: "GET",
+                        url: "/ApiClassManagement/GetTodaysAttendance?currentClassId=@Model.Id",
+                        async: false
+                    })
+                    .success(function(data) {
+                        if (data.Status === true) {
+                            $scope.TodaysAttendance = data.Data.TotalAttendanceTaken;
+                            $scope.TotalStudentsInClass = data.Data.AttendanceData.length;
+
+                            $("#studentInformation tbody tr").remove();
+
+                            $.each(data.Data.AttendanceData, function(i, datum) {
+                                var rowData = '<tr><td>' + datum.StudentId + '</td>';
+                                rowData += '<td>' + datum.StudentSurname + ', ' + datum.StudentOtherName + '</td>';
+                                rowData += '<td>';
+                                rowData += '<label class="switch switch-xsmall">';
+
+                                if (datum.IsMarked) {
+                                    rowData += '<input type="checkbox" onclick="markAbsent(' + datum.StudentId + ')" checked="checked" />';
+                                } else {
+                                    rowData += '<input type="checkbox" onclick="markPresent(' + datum.StudentId + ')" />';
+                                }
+
+                                rowData += '<span></span>';
+                                rowData += '</label>&nbsp;<a style="cursor:hand" onclick="loadStudent(' + datum.StudentId + ')" class="text-info"><strong><i class="fa fa-graduation-cap"></i></strong></a>';
+                                rowData += '</td>';
+                                rowData += '</tr>';
+
+                                $("#studentInformation tbody").append(rowData);
+                            });
+                        } else {
+                            window.notyDisplay('', data.Message, 'warning');
+                        }
+                    })
+                    .error(function(data) {
+                        window.notyEx();
+                    });
+            };
+            $scope.GetTodaysAttendance();
+        });
+
+        function markAbsent(parameter) {
+            markAttendance(parameter, false);
+        };
+
+        function markPresent(parameter) {
+            markAttendance(parameter, true);
+        };
+
+        function loadStudent(studentId) {
+            $.ajax({
+                    type: "GET",
+                    url: "/ApiClassManagement/GetStudent?studentId=" + studentId,
+                    async: true
+                })
+                .success(function(data) {
+                    if (data.Status === true) {
+                        var studentInfo = data.Data;
+
+                        $('#studentInformationPanel').show();
+
+                        $("#rPunctuality").ionRangeSlider({
+                            min: 0,
+                            max: 10
+                        });
+
+                        $("#rFriendliness").ionRangeSlider({
+                            min: 0,
+                            max: 10
+                        });
+
+                        $("#rCleanliness").ionRangeSlider({
+                            min: 0,
+                            max: 10
+                        });
+
+                        $('#sI_StudentImage').prop("src", "data:image/png;base64," + studentInfo.StudentInformation.StudentImage);
+                        $('#sI_StudentImage').prop("alt", studentInfo.StudentInformation.StudentId);
+
+                        $('#sI_StudentId').text(studentInfo.StudentInformation.StudentId);
+                        $('#sI_BriefInfo').text(studentInfo.StudentInformation.BriefInformation);
+                        $('#sI_FullName').text(studentInfo.StudentInformation.StudentSurname + ', ' + studentInfo.StudentInformation.StudentOtherName);
+                        $('#sI_HomeAddress').text(studentInfo.StudentInformation.StudentHomeAddress);
+                        $('#sI_PGFullName').text(studentInfo.StudentInformation.PGFullName);
+                        $('#sI_PGEmail').text(studentInfo.StudentInformation.PGEmail);
+                        $('#sI_PGPhone').text(studentInfo.StudentInformation.PGPhone);
+
+                        $('#sI_TeachersComment').val(studentInfo.Comment.Teacher);
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function(data) {
+                    window.notyEx();
+                });
+        };
+
+        function markAttendance(parameter, attendance) {
+            $.ajax({
+                    type: "GET",
+                    url: "/ApiClassManagement/MarkAttendance?classId=@Model.Id&studentId=" + parameter + "&presence=" + attendance,
+                    async: true
+                })
+                .success(function(data) {
+                    if (data.Status === true) {
+                        window.notyDisplay('', 'Attendance Taken for ' + parameter, 'success');
+                        getNgScope().GetTodaysAttendance();
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function(data) {
+                    window.notyEx();
+                });
+        };
+
+        function saveComment() {
+            $.ajax({
+                type: "GET",
+                url: "/ApiClassManagement/SaveComment?studentId=" + $('#sI_StudentId').text() + "&commentData=" + $('#sI_TeachersComment').val(),
+                async: true
+            })
+               .success(function (data) {
+                   if (data.Status === true) {
+                       window.notyDisplay('', 'Comment Saved for ' + $('#sI_StudentId').text(), 'success');
+                   } else {
+                       window.notyDisplay('', data.Message, 'warning');
+                   }
+               })
+               .error(function (data) {
+                   window.notyEx();
+               });
+        };
+    </script>
+}

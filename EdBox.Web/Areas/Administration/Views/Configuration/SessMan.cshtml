@@ -1,0 +1,133 @@
+﻿
+@{
+    ViewBag.Title = "Session Management";
+    Layout = "~/Views/Shared/_ApplicationLayout.cshtml";
+}
+
+<div class="alert alert-danger" role="alert">
+    <strong>Wait a minute!</strong> Regardless of how many Sessions have been configured, only ONE can be active at a time.
+    Removal of Sessions has been disbled in this version. All data collected will be done against the active session. Only proceed when you understand this.
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title">Session Configuration</h4>
+    </div>
+    <div class="panel-body">
+        <div class="col-md-3 col-xs-12">
+            <form id="validate" role="form" class="form-horizontal" action="javascript:addNewSessionForm();">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="col-md-12 col-xs-12">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <label class="control-label">Session Name:</label>
+                                    <input type="text" id="sessionName" class="validate[required,minSize[4]] form-control" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <div class="btn-group pull-left">
+                                        <button class="btn btn-primary btn-block" type="submit">Add Session</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-9 col-xs-12">
+            <div class="table-responsive">
+                <table id="sessionInformation" class="table table-responsive">
+                    <thead>
+                        <tr>
+                            <th>Configured Session</th>
+                            <th>Date Commenced</th>
+                            <th>Date Concluded</th>
+                            <th>...</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        edBox.controller('edBoxCtrlr', function ($scope) {
+        });
+
+        function loadSession() {
+            window.notyDisplay('', 'Loading ...', 'warning');
+            $("#sessionInformation tbody tr").remove();
+
+            $.ajax({
+                type: "GET",
+                url: "/ApiConfiguration/GetSessions",
+                async: false
+            })
+                .success(function (data) {
+                    if (data.Status === true) {
+
+                        $.each(data.Data, function (i, datum) {
+                            var rowData = '<tr><td>' + datum.PeriodName + '</td>';
+                            rowData += '<td>' + datum.PeriodStart + '</td>';
+                            rowData += '<td>' + datum.PeriodEnd + '</td>';
+
+                            if (datum.IsActive === false)
+                                rowData += '<td><label class="switch switch-xsmall"><input type="checkbox" onclick="activateSession(this, ' + datum.Id + ')"/><span></span></label></td>';
+                            else
+                                rowData += '<td></td>';
+
+                            rowData += '</tr>';
+
+                            $("#sessionInformation tbody").append(rowData);
+                        });
+
+                        $("#sessionInformation").dataTable();
+                        window.notyDisplay('', 'All Done', 'success');
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function (data) {
+                    window.notyEx();
+                });
+        };
+        loadSession();
+
+        function addNewSessionForm() {
+            $.ajax({
+                type: "GET",
+                url: "/ApiConfiguration/AddSession?sessionName=" + $('#sessionName').val(),
+                async: false
+            })
+                .success(function (data) {
+                    if (data.Status === true) {
+                        loadSession();
+                        $('#sessionName').val('');
+                        window.notyDisplay('', 'All Done', 'success');
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function (data) {
+                    window.notyEx();
+                });
+        };
+
+        function activateSession(checkBox, id) {
+            if (checkBox.checked) {
+                notyConfirmApiCall("/ApiConfiguration/ActivateSession?sessionId=" + id, "You are about to change the CURRENT ACTIVE SESSION. Are you REALLY sure about this?", loadSession);
+            }
+        };
+    </script>
+}

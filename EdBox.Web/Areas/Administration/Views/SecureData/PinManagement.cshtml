@@ -1,0 +1,144 @@
+﻿@using EdBox.Web.Models
+
+@{
+    ViewBag.Title = "Pin Management";
+    Layout = "~/Views/Shared/_ApplicationLayout.cshtml";
+    var data = new Entities();
+}
+
+<div class="row">
+    <div class="col-md-3 col-xs-12">
+        <form id="validate" role="form" class="form-horizontal" action="javascript:addNewPinBatch();">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="col-md-12 col-xs-12">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <label class="control-label">Batch Size:</label>
+                                <input type="number" id="batchSize" class="validate[required,minSize[1]] form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="col-md-12 col-xs-12">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="btn-group pull-right">
+                                    <button class="btn btn-primary" type="submit">Create Batch</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">PIN Batches</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="list-group border-bottom">
+                        @foreach (var pinBatch in data.PinBatches.Where(x => x.IsDeleted == false && x.EducationalPeriod == UserInformation.CurrentEducationalPeriod.Id && x.SubEducationalPeriod == UserInformation.CurrentSubEducationalPeriod.Id).ToList())
+                        {
+                            <a href="#" onclick="getBatch('@pinBatch.Id')" class="list-group-item">@pinBatch.BatchDate <span class="label label-success pull-right">@pinBatch.BatchSpace PINS</span></a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-9 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Batch Members</h4>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table id="pinBatchMembers" class="table table-responsive">
+                        <thead>
+                            <tr>
+                                <th>PIN Data</th>
+                                <th>Attached Student</th>
+                                <th>Date Used</th>
+                                <th>...</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+
+        edBox.controller('edBoxCtrlr', function($scope) {
+
+        });
+
+        function loadPage() {
+            $("#pinBatchMembers").dataTable();
+        };
+
+        function addNewPinBatch() {
+            $.ajax({
+                    type: "GET",
+                    url: "/ApiSecureData/CreateBatchItems?batchSpace=" + $('#batchSize').val(),
+                    async: false
+                })
+                .success(function(data) {
+                    if (data.Status === true) {
+                        window.notyDisplay('', data.Message, 'success');
+                        window.location = '@Url.Action("PinManagement", "SecureData", new {area = "Administration"})';
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function(data) {
+                    window.notyEx();
+                });
+        };
+
+        function getBatch(batchId) {
+            window.notyDisplay('', 'Loading ...', 'warning');
+            $("#pinBatchMembers tbody tr").remove();
+
+            $.ajax({
+                    type: "GET",
+                    url: "/ApiSecureData/GetBatchItems?batchId=" + batchId,
+                    async: false
+                })
+                .success(function(data) {
+                    if (data.Status === true) {
+
+                        $.each(data.Data, function(i, datum) {
+                            var rowData = '<tr><td>' + datum.x.PinData + '</td>';
+                            rowData += '<td>' + datum.x.StudentId + '%</td>';
+
+                            if (datum.x.IsUsed) {
+                                rowData += '<td>' + datum.DateUsed + '</td>';
+                                rowData += '<td><span class="label label-success">Used</span></td>';
+                            } else {
+                                rowData += '<td>...</td>';
+                                rowData += '<td><span class="label label-warning">Avaliable</span></td>';
+                            }
+
+                            rowData += '</div></tr>';
+
+                            $("#pinBatchMembers tbody").append(rowData);
+                        });
+
+                        $("#pinBatchMembers").dataTable();
+                        window.notyDisplay('', 'All Done', 'success');
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function(data) {
+                    window.notyEx();
+                });
+        };
+    </script>
+}

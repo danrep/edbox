@@ -1,0 +1,247 @@
+﻿@using EdBox.Core.EnumLib
+@model Assessment
+
+@{
+    ViewBag.Title = "Result Management Overview";
+    Layout = "~/Views/Shared/_ApplicationLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <h3>
+                    Result Data Upload <strong><i class="fa text-success fa-upload"></i></strong>
+                </h3>
+                <p>Make your Selections and Upload its Result</p>
+                <form action="#" class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div id="classSubjectMenu">
+                                <ul>
+                                    <li ng-repeat="class in Classes track by $index">
+                                        <a href="#">{{class.ClassName}}</a>
+                                        <ul>
+                                            <li ng-repeat="subject in Subjects track by $index">
+                                                <a href="#">{{subject.SubjectName}}</a>
+                                                <ul>
+                                                    <li ng-repeat="assessment in Assessments">
+                                                        <a href="@Url.Action("Index", "ResultManagement")?assessmentId={{assessment.Id}}&classId={{class.x.ClassId}}&subjectId={{subject.x.SubjectId}}">
+                                                            {{assessment.AssessmentName}}
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        @if (Model != null)
+        {
+            <div class="row">
+                <div class="col-md-4">
+                    <a href="#" class="tile tile-info tile-valign">
+                        @Model.AssessmentName
+                        <div class="informer informer-default">@(((AssessmentType)Model.AssessmentType).DisplayName())</div>
+                        <div class="informer informer-default dir-br">@(Model.AssmentPercentage.ToString("0.00"))% of Total Mark</div>
+                    </a>
+                </div>
+                <div class="col-md-8">
+                    <form action="@Url.Action("UploadDocument", "ApiUtility", new {area = "", assessmentId = Model.Id})" method="post" enctype="multipart/form-data" class="dropzone dropzone-mini" id="dropzoneForm1">
+                        <div class="fallback">
+                            <input name="file" type="file" multiple />
+                            <input type="submit" value="Upload" />
+                        </div>
+                    </form>
+                    <div class="btn-group pull-right" style="margin-top: 10px;">
+                        <button class="btn btn-danger" onclick="removeUploadedFiles()">Remove Uploaded Files</button>
+                        <button class="btn btn-primary" onclick="processUploadedFiles()">Process Uploaded Files</button>
+                        <a class="btn btn-info" href="@Url.Action("ExportDataSheet", "ResultManagement", new {assessmentId = Model.Id, subjectId = ViewBag.SubjectId, classId = ViewBag.ClassId})">Download Empty Sheet</a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12" style="margin-top: 10px;">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">Uploaded Results for Assessment <strong>@Model.AssessmentName</strong></h4>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table id="uploadedFiles" class="table table-responsive">
+                                    <thead>
+                                        <tr>
+                                            <th>Date Uploaded</th>
+                                            <th>File Name</th>
+                                            <th>File Size</th>
+                                            <th>Status</th>
+                                            <th>...</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        $(function() {
+            preLoad();
+        });
+
+        function preLoad() {
+            $('#classSubjectMenu').menu();
+
+            $("#uploadedFiles tbody tr").remove();
+            $.ajax({
+                    type: "GET",
+                    url: "/ApiResultManagement/GetUploadHistory?assessmentId=@(Model?.Id ?? 0)&subjectId=@ViewBag.SubjectId&classId=@ViewBag.ClassId",
+                    async: true
+                })
+                .success(function(data) {
+                    if (data.Status === true) {
+
+                        $.each(data.Data, function(i, datum) {
+                            var rowData = '<tr><td>' + datum.DateUploaded + '</td>';
+                            rowData += '<td>' + datum.u.RawFileName + '</td>';
+                            rowData += '<td>' + datum.u.FileSize + 'b</td>';
+                            rowData += '<td>' + datum.ProcessingStatus + '</td>';
+
+                            rowData += '<td><button onclick="viewUploadedData(\'' + datum.u.AssessmentId + '\')" class="btn btn-info btn-condensed btn-sm"><span class="fa fa-database"></span></button></td>';
+                            rowData += '</div></tr>';
+
+                            $("#uploadedFiles tbody").append(rowData);
+                        });
+
+                        $("#uploadedFiles").dataTable();
+                        window.notyDisplay('', 'All Done', 'success');
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function(data) {
+                    window.notyEx();
+                });
+        };
+
+        edBox.controller('edBoxCtrlr', function($scope) {
+            $scope.Assessments = [];
+            $scope.Classes = [];
+            $scope.Subjects = [];
+
+            $scope.LoadHelm = function() {
+                window.notyDisplay('', 'Loading... ', 'warning');
+
+                $.ajax({
+                        type: "GET",
+                        url: "/ApiResultManagement/GetHelm",
+                        async: false
+                    })
+                    .success(function(data) {
+                        if (data.Status === true) {
+                            window.notyDisplay('', data.Message, 'success');
+                            $scope.Classes = data.Data.Classes;
+                            $scope.Assessments = data.Data.Assessments;
+                            $scope.Subjects = data.Data.Subjects;
+                        } else {
+                            window.notyDisplay('', data.Message, 'warning');
+                        }
+                    })
+                    .error(function(data) {
+                        window.notyEx();
+                    });
+            };
+            $scope.LoadHelm();
+        });
+
+        function removeUploadedFiles() {
+            Dropzone.forElement("#dropzoneForm1").removeAllFiles(true);
+            $.ajax({
+                    type: "GET",
+                    url: "/ApiUtility/ClearFiles",
+                    async: true
+                })
+                .success(function(data) {
+                    if (data === 'True') {
+                        window.notyDisplay('', 'All Done', 'success');
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function(data) {
+                    window.notyEx();
+                });
+        }
+
+        function viewUploadedData(assessmentId) {
+            var redirection = "@Url.Action("DisplayUploadedData", "ResultManagement")?assessmentId=" + assessmentId + "&subjectId=@ViewBag.SubjectId&classId=@ViewBag.ClassId";
+            window.notyConfirmRedirect(redirection);
+        };
+
+        function processUploadedFiles() {
+            if (Dropzone.forElement("#dropzoneForm1").getUploadingFiles().length === 0) {
+                var readyFiles = [];
+                $.each(Dropzone.forElement("#dropzoneForm1").getAcceptedFiles(), function(i, currentFile) {
+                    readyFiles.push(currentFile.name);
+                });
+
+                if (readyFiles.length === 0) {
+                    notyDisplay('', 'You need to add at least one file for processing', 'warning');
+                    Dropzone.forElement("#dropzoneForm1").removeAllFiles(true);
+                    return;
+                }
+
+                $.ajax({
+                        type: "GET",
+                        url: "/ApiResultManagement/ProcessUploadedFiles?assessmentId=" + @(Model?.Id ?? 0) + "&fileNames=" + readyFiles + '&classId=@(ViewBag.ClassId ?? 0)&subjectId=@(ViewBag.SubjectId ?? 0)',
+                        async: true
+                    })
+                    .success(function(data) {
+                        if (data.Status === true) {
+                            notyDisplay('', 'The Upload was Successful. Please note that you will have to manually add images to the questions if you so wish', 'success');
+                            Dropzone.forElement("#dropzoneForm1").removeAllFiles(true);
+
+                            preLoad();
+                            window.notyDisplay('', 'All Done', 'success');
+                        } else {
+                            window.notyDisplay('', data.Message, 'warning');
+                        }
+                    })
+                    .error(function(data) {
+                        window.notyEx();
+                    });
+            } else {
+                notyDisplay('', 'Some files are still uploading. Please wait.', 'warning');
+            }
+        }
+
+        Dropzone.options.dropzoneForm1 = {
+            maxFiles: 1,
+            maxFilesize: 100,
+            acceptedFiles: ".csv",
+            init: function() {
+                this.on("maxfilesexceeded", function(data) {
+                    window.notyDisplay('', data.Message, 'warning');
+                });
+
+                this.on("success", function(data) {
+                    window.notyDisplay('', 'File has been Uploaded Sucessfully', 'success');
+                });
+            }
+        };
+    </script>
+}

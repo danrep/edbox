@@ -1,0 +1,195 @@
+﻿@using EdBox.Core.EnumLib
+
+@{
+    ViewBag.Title = "Assessment Management";
+    Layout = "~/Views/Shared/_ApplicationLayout.cshtml";
+    var data = new Entities();
+}
+
+<div class="row">
+    <div class="col-md-4 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Active Parameters</h3>
+            </div>
+            <div class="panel-body">
+                @{
+                    var activeSession = data.EducationalPeriods.FirstOrDefault(x => x.IsActive);
+                    if (activeSession == null)
+                    {
+                        <div class="alert alert-danger">
+                            No Active Session Set
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-success">
+                            Current Session: <strong>@activeSession.PeriodName</strong>
+                        </div>
+                        var activeSubSession = data.SubEducationalPeriods.FirstOrDefault(x => x.IsActive && x.EducationalPeriodId == activeSession.Id);
+                        if (activeSubSession == null)
+                        {
+                            <div class="alert alert-warning">
+                                No Active Sub Session Set
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info">
+                                Current Sub Session: <strong>@activeSubSession.SubPeriodName</strong>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-3 col-xs-12">
+        <form id="validate" role="form" class="form-horizontal" action="javascript:addNewAssessment();">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="col-md-12 col-xs-12">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <label class="control-label">Assessment Name:</label>
+                                <input type="text" id="assessmentName" class="validate[required,minSize[4]] form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <label class="control-label">Assessment Percentage:</label>
+                                <input type="number" id="percentage" class="validate[required,minSize[1]] form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <label class="control-label">Assessment Type:</label>
+                                <select class="form-control select validate[required]" id="assessmentType">
+                                    <option value="0">- Select an Assessment Type -</option>
+                                    @foreach (var role in EnumDictionary.GetList<AssessmentType>().OrderBy(x => x.ItemName))
+                                    {
+                                        <option value="@role.ItemId">@role.ItemName</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="col-md-12 col-xs-12">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="btn-group pull-right">
+                                    <button class="btn btn-primary" type="submit">Add Assessment</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-9 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Configured Assessments</h4>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table id="assessmentInformation" class="table table-responsive">
+                        <thead>
+                        <tr>
+                            <th>Assessment Name</th>
+                            <th>Percentage</th>
+                            <th>Assessment Type</th>
+                            <th>...</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        edBox.controller('edBoxCtrlr', function($scope) {
+        });
+
+        function loadAssessments() {
+            window.notyDisplay('', 'Loading ...', 'warning');
+            $("#assessmentInformation tbody tr").remove();
+
+            $.ajax({
+                    type: "GET",
+                    url: "/ApiConfiguration/GetAssessments",
+                    async: false
+                })
+                .success(function(data) {
+                    if (data.Status === true) {
+
+                        $.each(data.Data, function(i, datum) {
+                            var rowData = '<tr><td>' + datum.a.AssessmentName + '</td>';
+                            rowData += '<td>' + datum.a.AssmentPercentage + '%</td>';
+                            rowData += '<td>' + datum.AssessmentTypeDisplay + '</td>';
+
+                            rowData += '<td><button onclick="deleteAssessment(\'' + datum.a.Id + '\')" class="btn btn-danger btn-condensed btn-sm"><span class="fa fa-trash"></span></button></td>';
+                            rowData += '</div></tr>';
+
+                            $("#assessmentInformation tbody").append(rowData);
+                        });
+
+                        $("#assessmentInformation").dataTable();
+                        window.notyDisplay('', 'All Done', 'success');
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function(data) {
+                    window.notyEx();
+                });
+        };
+
+        loadAssessments();
+
+        function deleteAssessment(assessmentId) {
+            var deleteApiCall = "/ApiConfiguration/RemoveAssessment?assessmentId=" + assessmentId;
+            window.notyConfirmApiCall(deleteApiCall, 'Are you sure you wish to Delete this Assessment?', loadAssessments);
+        };
+
+        function addNewAssessment() {
+            if ($('#assessmentType').val() === 0 || $('#assessmentType').val() === "0" || typeof $('#assessmentType').val() === 'undefined') {
+                $('#assessmentType').focus();
+                window.notyDisplay('', 'Please Select an Assessment Type', 'warning');
+                return;
+            }
+
+            $.ajax({
+                    type: "GET",
+                    url: "/ApiConfiguration/AddAssessment?assessmentName=" + $('#assessmentName').val()
+                        + "&percentage=" + $('#percentage').val()
+                        + "&assessmentType=" + $('#assessmentType').val(),
+                    async: true
+                })
+                .success(function(data) {
+                    if (data.Status === true) {
+                        $('#assessmentName').val('');
+                        $('#percentage').val('');
+                        $('#assessmentType').val("0");
+                        loadAssessments();
+                        window.notyDisplay('', 'All Done', 'success');
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function(data) {
+                    window.notyEx();
+                });
+        };
+    </script>
+}

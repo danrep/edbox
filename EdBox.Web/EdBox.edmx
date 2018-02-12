@@ -1,0 +1,942 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="EdBox.DatabaseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Assessment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AssessmentName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="AssmentPercentage" Type="decimal" Precision="18" Scale="5" Nullable="false" />
+          <Property Name="AssessmentType" Type="int" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Bill">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BillDate" Type="datetime" Nullable="false" />
+          <Property Name="StudentId" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="EducationalPeriodId" Type="int" Nullable="false" />
+          <Property Name="SubEducationalPeriod" Type="int" Nullable="false" />
+          <Property Name="BillItemId" Type="int" Nullable="false" />
+          <Property Name="BillStatusId" Type="int" Nullable="false" />
+          <Property Name="SettlementTransactionRef" Type="varchar" MaxLength="100" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Class">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ClassName" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="DateCreated" Type="datetime" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" />
+        </EntityType>
+        <EntityType Name="ClassMap">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CredentialId" Type="int" Nullable="false" />
+          <Property Name="ClassId" Type="int" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="DateAssigned" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ClassSubject">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SessionId" Type="int" Nullable="false" />
+          <Property Name="SubSessionId" Type="int" Nullable="false" />
+          <Property Name="SubjectId" Type="int" Nullable="false" />
+          <Property Name="ClassId" Type="int" Nullable="false" />
+          <Property Name="CredentialId" Type="int" Nullable="false" />
+          <Property Name="DateCreated" Type="datetime" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="IsActivated" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ClassSubjectMemberResult">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ClassSubjectId" Type="int" Nullable="false" />
+          <Property Name="MemberResultName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="TotalContributedMark" Type="int" Nullable="false" />
+          <Property Name="MemberResultType" Type="int" Nullable="false" />
+          <Property Name="DateConfigured" Type="datetime" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Credential">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Username" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="PasswordData" Type="varchar(max)" Nullable="false" />
+          <Property Name="PasswordSalt" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="UserState" Type="int" Nullable="false" />
+          <Property Name="DateRegistered" Type="datetime" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CredentialMap">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CredentialId" Type="int" Nullable="false" />
+          <Property Name="RoleId" Type="int" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="DateAssigned" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EducationalPeriod">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PeriodName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="PeriodStart" Type="datetime" Nullable="false" />
+          <Property Name="PeriodEnd" Type="datetime" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PinBatch">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BatchDate" Type="datetime" Nullable="false" />
+          <Property Name="BatchSpace" Type="int" Nullable="false" />
+          <Property Name="EducationalPeriod" Type="int" Nullable="false" />
+          <Property Name="SubEducationalPeriod" Type="int" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PinBatchMembers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BatchId" Type="int" Nullable="false" />
+          <Property Name="PinData" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="IsUsed" Type="bit" Nullable="false" />
+          <Property Name="DateUsed" Type="datetime" Nullable="false" />
+          <Property Name="StudentId" Type="varchar" MaxLength="100" />
+          <Property Name="CredentialId" Type="int" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ResultRaw">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StudentId" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="CredentialId" Type="int" Nullable="false" />
+          <Property Name="SessionId" Type="int" Nullable="false" />
+          <Property Name="SubSessionId" Type="int" Nullable="false" />
+          <Property Name="ClassId" Type="int" Nullable="false" />
+          <Property Name="SubjectId" Type="int" Nullable="false" />
+          <Property Name="AssessmentId" Type="int" Nullable="false" />
+          <Property Name="FileId" Type="int" Nullable="false" />
+          <Property Name="DateUploaded" Type="datetime" Nullable="false" />
+          <Property Name="ScoreObtained" Type="decimal" Precision="18" Scale="6" Nullable="false" />
+          <Property Name="ScoreTotal" Type="decimal" Precision="18" Scale="6" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Student">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AuuthCredentialId" Type="int" Nullable="false" />
+          <Property Name="StudentId" Type="varchar" MaxLength="100" />
+          <Property Name="StudentSurname" Type="varchar" MaxLength="100" />
+          <Property Name="StudentOtherName" Type="varchar" MaxLength="100" />
+          <Property Name="StudentHomeAddress" Type="varchar" MaxLength="100" />
+          <Property Name="CurrentClassId" Type="int" Nullable="false" />
+          <Property Name="PGFullName" Type="varchar" MaxLength="100" />
+          <Property Name="PGEmail" Type="varchar" MaxLength="100" />
+          <Property Name="PGPhone" Type="varchar" MaxLength="100" />
+          <Property Name="StudentImage" Type="varchar(max)" />
+          <Property Name="BriefInformation" Type="varchar" MaxLength="1000" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="StudentAttendance">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StudentId" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="EducationalPeriodId" Type="int" Nullable="false" />
+          <Property Name="SubEducationalPeriodId" Type="int" Nullable="false" />
+          <Property Name="AttendanceDate" Type="datetime" Nullable="false" />
+          <Property Name="AttendanceStatus" Type="int" Nullable="false" />
+          <Property Name="ClassId" Type="int" Nullable="false" />
+          <Property Name="MarkedByCredentialId" Type="int" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="StudentCommentFromTeacher">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StudentId" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="MarkedByCredentialId" Type="int" Nullable="false" />
+          <Property Name="EducationalPeriod" Type="int" Nullable="false" />
+          <Property Name="SubEducationalPeriod" Type="int" Nullable="false" />
+          <Property Name="CommentData" Type="varchar(max)" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="StudentRating">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StudentId" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="MarkedByCredentialId" Type="int" Nullable="false" />
+          <Property Name="EducationalPeriod" Type="int" Nullable="false" />
+          <Property Name="SubEducationalPeriod" Type="int" Nullable="false" />
+          <Property Name="RatingType" Type="int" Nullable="false" />
+          <Property Name="RatingValue" Type="int" Nullable="false" />
+          <Property Name="RatingDate" Type="datetime" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="StudentSubjectMap">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StudentId" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="SubjectId" Type="int" Nullable="false" />
+          <Property Name="DateAssigned" Type="datetime" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" />
+        </EntityType>
+        <EntityType Name="SubEducationalPeriod">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SubPeriodName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="SubPeriodOrder" Type="int" Nullable="false" />
+          <Property Name="EducationalPeriodId" Type="int" Nullable="false" />
+          <Property Name="PeriodStart" Type="datetime" Nullable="false" />
+          <Property Name="PeriodEnd" Type="datetime" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SubjectMap">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CredentialId" Type="int" Nullable="false" />
+          <Property Name="SubjectId" Type="int" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="DateAssigned" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Transaction">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TransactionDate" Type="datetime" Nullable="false" />
+          <Property Name="CredentialId" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="5" Nullable="false" />
+          <Property Name="RequestJson" Type="varchar(max)" />
+          <Property Name="ResponseJson" Type="varchar(max)" />
+          <Property Name="SettlementTransactionRef" Type="varchar" MaxLength="100" />
+          <Property Name="TransactionStatus" Type="int" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UploadHistory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CredentialId" Type="int" Nullable="false" />
+          <Property Name="SubjectId" Type="int" Nullable="false" />
+          <Property Name="ClassId" Type="int" Nullable="false" />
+          <Property Name="AssessmentId" Type="int" Nullable="false" />
+          <Property Name="RawFileName" Type="varchar" MaxLength="1000" Nullable="false" />
+          <Property Name="SystemFileName" Type="varchar" MaxLength="1000" Nullable="false" />
+          <Property Name="OperationMessages" Type="varchar(max)" Nullable="false" />
+          <Property Name="FileSize" Type="bigint" Nullable="false" />
+          <Property Name="ProcessingStatus" Type="int" Nullable="false" />
+          <Property Name="DateUploaded" Type="datetime" Nullable="false" />
+          <Property Name="DateProcessStart" Type="datetime" Nullable="false" />
+          <Property Name="DateProcessEnd" Type="datetime" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <Function Name="GetStudentPosition" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="studentId" Type="varchar" Mode="In" />
+          <Parameter Name="classId" Type="int" Mode="In" />
+          <Parameter Name="isSession" Type="bit" Mode="In" />
+        </Function>
+        <EntityContainer Name="EdBoxDatabaseModelStoreContainer">
+          <EntitySet Name="Assessment" EntityType="Self.Assessment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Bill" EntityType="Self.Bill" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Class" EntityType="Self.Class" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ClassMap" EntityType="Self.ClassMap" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ClassSubject" EntityType="Self.ClassSubject" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ClassSubjectMemberResult" EntityType="Self.ClassSubjectMemberResult" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Credential" EntityType="Self.Credential" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CredentialMap" EntityType="Self.CredentialMap" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EducationalPeriod" EntityType="Self.EducationalPeriod" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PinBatch" EntityType="Self.PinBatch" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PinBatchMembers" EntityType="Self.PinBatchMembers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ResultRaw" EntityType="Self.ResultRaw" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Student" EntityType="Self.Student" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StudentAttendance" EntityType="Self.StudentAttendance" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StudentCommentFromTeacher" EntityType="Self.StudentCommentFromTeacher" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StudentRating" EntityType="Self.StudentRating" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StudentSubjectMap" EntityType="Self.StudentSubjectMap" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SubEducationalPeriod" EntityType="Self.SubEducationalPeriod" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SubjectMap" EntityType="Self.SubjectMap" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Transaction" EntityType="Self.Transaction" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UploadHistory" EntityType="Self.UploadHistory" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="EdBox.DatabaseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Assessments" EntityType="EdBox.DatabaseModel.Assessment" />
+          <EntitySet Name="Bills" EntityType="EdBox.DatabaseModel.Bill" />
+          <EntitySet Name="Classes" EntityType="EdBox.DatabaseModel.Class" />
+          <EntitySet Name="ClassMaps" EntityType="EdBox.DatabaseModel.ClassMap" />
+          <EntitySet Name="ClassSubjects" EntityType="EdBox.DatabaseModel.ClassSubject" />
+          <EntitySet Name="ClassSubjectMemberResults" EntityType="EdBox.DatabaseModel.ClassSubjectMemberResult" />
+          <EntitySet Name="Credentials" EntityType="EdBox.DatabaseModel.Credential" />
+          <EntitySet Name="CredentialMaps" EntityType="EdBox.DatabaseModel.CredentialMap" />
+          <EntitySet Name="EducationalPeriods" EntityType="EdBox.DatabaseModel.EducationalPeriod" />
+          <EntitySet Name="PinBatches" EntityType="EdBox.DatabaseModel.PinBatch" />
+          <EntitySet Name="PinBatchMembers" EntityType="EdBox.DatabaseModel.PinBatchMember" />
+          <EntitySet Name="ResultRaws" EntityType="EdBox.DatabaseModel.ResultRaw" />
+          <EntitySet Name="Students" EntityType="EdBox.DatabaseModel.Student" />
+          <EntitySet Name="StudentAttendances" EntityType="EdBox.DatabaseModel.StudentAttendance" />
+          <EntitySet Name="StudentCommentFromTeachers" EntityType="EdBox.DatabaseModel.StudentCommentFromTeacher" />
+          <EntitySet Name="StudentRatings" EntityType="EdBox.DatabaseModel.StudentRating" />
+          <EntitySet Name="StudentSubjectMaps" EntityType="EdBox.DatabaseModel.StudentSubjectMap" />
+          <EntitySet Name="SubEducationalPeriods" EntityType="EdBox.DatabaseModel.SubEducationalPeriod" />
+          <EntitySet Name="SubjectMaps" EntityType="EdBox.DatabaseModel.SubjectMap" />
+          <EntitySet Name="Transactions" EntityType="EdBox.DatabaseModel.Transaction" />
+          <EntitySet Name="UploadHistories" EntityType="EdBox.DatabaseModel.UploadHistory" />
+          <FunctionImport Name="GetStudentPosition" ReturnType="Collection(EdBox.DatabaseModel.GetStudentPosition_Result)">
+            <Parameter Name="studentId" Mode="In" Type="String" />
+            <Parameter Name="classId" Mode="In" Type="Int32" />
+            <Parameter Name="isSession" Mode="In" Type="Boolean" />
+          </FunctionImport>
+        </EntityContainer>
+        <EntityType Name="Assessment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AssessmentName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="AssmentPercentage" Type="Decimal" Nullable="false" Precision="18" Scale="5" />
+          <Property Name="AssessmentType" Type="Int32" Nullable="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Bill">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BillDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="StudentId" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="EducationalPeriodId" Type="Int32" Nullable="false" />
+          <Property Name="SubEducationalPeriod" Type="Int32" Nullable="false" />
+          <Property Name="BillItemId" Type="Int32" Nullable="false" />
+          <Property Name="BillStatusId" Type="Int32" Nullable="false" />
+          <Property Name="SettlementTransactionRef" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Class">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ClassName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsDeleted" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="ClassMap">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CredentialId" Type="Int32" Nullable="false" />
+          <Property Name="ClassId" Type="Int32" Nullable="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="DateAssigned" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="ClassSubject">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SessionId" Type="Int32" Nullable="false" />
+          <Property Name="SubSessionId" Type="Int32" Nullable="false" />
+          <Property Name="SubjectId" Type="Int32" Nullable="false" />
+          <Property Name="ClassId" Type="Int32" Nullable="false" />
+          <Property Name="CredentialId" Type="Int32" Nullable="false" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="IsActivated" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ClassSubjectMemberResult">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ClassSubjectId" Type="Int32" Nullable="false" />
+          <Property Name="MemberResultName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="TotalContributedMark" Type="Int32" Nullable="false" />
+          <Property Name="MemberResultType" Type="Int32" Nullable="false" />
+          <Property Name="DateConfigured" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Credential">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="PasswordData" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="PasswordSalt" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="UserState" Type="Int32" Nullable="false" />
+          <Property Name="DateRegistered" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CredentialMap">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CredentialId" Type="Int32" Nullable="false" />
+          <Property Name="RoleId" Type="Int32" Nullable="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="DateAssigned" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="EducationalPeriod">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PeriodName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="PeriodStart" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="PeriodEnd" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PinBatch">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BatchDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="BatchSpace" Type="Int32" Nullable="false" />
+          <Property Name="EducationalPeriod" Type="Int32" Nullable="false" />
+          <Property Name="SubEducationalPeriod" Type="Int32" Nullable="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PinBatchMember">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BatchId" Type="Int32" Nullable="false" />
+          <Property Name="PinData" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="IsUsed" Type="Boolean" Nullable="false" />
+          <Property Name="DateUsed" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="StudentId" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CredentialId" Type="Int32" Nullable="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ResultRaw">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StudentId" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CredentialId" Type="Int32" Nullable="false" />
+          <Property Name="SessionId" Type="Int32" Nullable="false" />
+          <Property Name="SubSessionId" Type="Int32" Nullable="false" />
+          <Property Name="ClassId" Type="Int32" Nullable="false" />
+          <Property Name="SubjectId" Type="Int32" Nullable="false" />
+          <Property Name="AssessmentId" Type="Int32" Nullable="false" />
+          <Property Name="FileId" Type="Int32" Nullable="false" />
+          <Property Name="DateUploaded" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ScoreObtained" Type="Decimal" Nullable="false" Precision="18" Scale="6" />
+          <Property Name="ScoreTotal" Type="Decimal" Nullable="false" Precision="18" Scale="6" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Student">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AuuthCredentialId" Type="Int32" Nullable="false" />
+          <Property Name="StudentId" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="StudentSurname" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="StudentOtherName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="StudentHomeAddress" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CurrentClassId" Type="Int32" Nullable="false" />
+          <Property Name="PGFullName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="PGEmail" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="PGPhone" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="StudentImage" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="BriefInformation" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="StudentAttendance">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StudentId" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="EducationalPeriodId" Type="Int32" Nullable="false" />
+          <Property Name="SubEducationalPeriodId" Type="Int32" Nullable="false" />
+          <Property Name="AttendanceDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="AttendanceStatus" Type="Int32" Nullable="false" />
+          <Property Name="ClassId" Type="Int32" Nullable="false" />
+          <Property Name="MarkedByCredentialId" Type="Int32" Nullable="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="StudentCommentFromTeacher">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StudentId" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="MarkedByCredentialId" Type="Int32" Nullable="false" />
+          <Property Name="EducationalPeriod" Type="Int32" Nullable="false" />
+          <Property Name="SubEducationalPeriod" Type="Int32" Nullable="false" />
+          <Property Name="CommentData" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="StudentRating">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StudentId" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="MarkedByCredentialId" Type="Int32" Nullable="false" />
+          <Property Name="EducationalPeriod" Type="Int32" Nullable="false" />
+          <Property Name="SubEducationalPeriod" Type="Int32" Nullable="false" />
+          <Property Name="RatingType" Type="Int32" Nullable="false" />
+          <Property Name="RatingValue" Type="Int32" Nullable="false" />
+          <Property Name="RatingDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="StudentSubjectMap">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StudentId" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="SubjectId" Type="Int32" Nullable="false" />
+          <Property Name="DateAssigned" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsDeleted" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="SubEducationalPeriod">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SubPeriodName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="SubPeriodOrder" Type="Int32" Nullable="false" />
+          <Property Name="EducationalPeriodId" Type="Int32" Nullable="false" />
+          <Property Name="PeriodStart" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="PeriodEnd" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SubjectMap">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CredentialId" Type="Int32" Nullable="false" />
+          <Property Name="SubjectId" Type="Int32" Nullable="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="DateAssigned" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="Transaction">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TransactionDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CredentialId" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="5" />
+          <Property Name="RequestJson" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ResponseJson" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="SettlementTransactionRef" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="TransactionStatus" Type="Int32" Nullable="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UploadHistory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CredentialId" Type="Int32" Nullable="false" />
+          <Property Name="SubjectId" Type="Int32" Nullable="false" />
+          <Property Name="ClassId" Type="Int32" Nullable="false" />
+          <Property Name="AssessmentId" Type="Int32" Nullable="false" />
+          <Property Name="RawFileName" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="SystemFileName" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="OperationMessages" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="FileSize" Type="Int64" Nullable="false" />
+          <Property Name="ProcessingStatus" Type="Int32" Nullable="false" />
+          <Property Name="DateUploaded" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DateProcessStart" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DateProcessEnd" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <ComplexType Name="GetStudentPosition_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="String" Name="StudentId" Nullable="false" MaxLength="100" />
+          <Property Type="Decimal" Name="Score" Nullable="true" Precision="18" Scale="5" />
+        </ComplexType>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="EdBoxDatabaseModelStoreContainer" CdmEntityContainer="Entities">
+          <EntitySetMapping Name="Assessments">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.Assessment">
+              <MappingFragment StoreEntitySet="Assessment">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="AssessmentType" ColumnName="AssessmentType" />
+                <ScalarProperty Name="AssmentPercentage" ColumnName="AssmentPercentage" />
+                <ScalarProperty Name="AssessmentName" ColumnName="AssessmentName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Bills">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.Bill">
+              <MappingFragment StoreEntitySet="Bill">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="SettlementTransactionRef" ColumnName="SettlementTransactionRef" />
+                <ScalarProperty Name="BillStatusId" ColumnName="BillStatusId" />
+                <ScalarProperty Name="BillItemId" ColumnName="BillItemId" />
+                <ScalarProperty Name="SubEducationalPeriod" ColumnName="SubEducationalPeriod" />
+                <ScalarProperty Name="EducationalPeriodId" ColumnName="EducationalPeriodId" />
+                <ScalarProperty Name="StudentId" ColumnName="StudentId" />
+                <ScalarProperty Name="BillDate" ColumnName="BillDate" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Classes">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.Class">
+              <MappingFragment StoreEntitySet="Class">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="ClassName" ColumnName="ClassName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ClassMaps">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.ClassMap">
+              <MappingFragment StoreEntitySet="ClassMap">
+                <ScalarProperty Name="DateAssigned" ColumnName="DateAssigned" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="ClassId" ColumnName="ClassId" />
+                <ScalarProperty Name="CredentialId" ColumnName="CredentialId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ClassSubjects">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.ClassSubject">
+              <MappingFragment StoreEntitySet="ClassSubject">
+                <ScalarProperty Name="IsActivated" ColumnName="IsActivated" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="CredentialId" ColumnName="CredentialId" />
+                <ScalarProperty Name="ClassId" ColumnName="ClassId" />
+                <ScalarProperty Name="SubjectId" ColumnName="SubjectId" />
+                <ScalarProperty Name="SubSessionId" ColumnName="SubSessionId" />
+                <ScalarProperty Name="SessionId" ColumnName="SessionId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ClassSubjectMemberResults">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.ClassSubjectMemberResult">
+              <MappingFragment StoreEntitySet="ClassSubjectMemberResult">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="DateConfigured" ColumnName="DateConfigured" />
+                <ScalarProperty Name="MemberResultType" ColumnName="MemberResultType" />
+                <ScalarProperty Name="TotalContributedMark" ColumnName="TotalContributedMark" />
+                <ScalarProperty Name="MemberResultName" ColumnName="MemberResultName" />
+                <ScalarProperty Name="ClassSubjectId" ColumnName="ClassSubjectId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Credentials">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.Credential">
+              <MappingFragment StoreEntitySet="Credential">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="DateRegistered" ColumnName="DateRegistered" />
+                <ScalarProperty Name="UserState" ColumnName="UserState" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="PasswordSalt" ColumnName="PasswordSalt" />
+                <ScalarProperty Name="PasswordData" ColumnName="PasswordData" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CredentialMaps">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.CredentialMap">
+              <MappingFragment StoreEntitySet="CredentialMap">
+                <ScalarProperty Name="DateAssigned" ColumnName="DateAssigned" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="CredentialId" ColumnName="CredentialId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EducationalPeriods">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.EducationalPeriod">
+              <MappingFragment StoreEntitySet="EducationalPeriod">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="PeriodEnd" ColumnName="PeriodEnd" />
+                <ScalarProperty Name="PeriodStart" ColumnName="PeriodStart" />
+                <ScalarProperty Name="PeriodName" ColumnName="PeriodName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PinBatches">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.PinBatch">
+              <MappingFragment StoreEntitySet="PinBatch">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="SubEducationalPeriod" ColumnName="SubEducationalPeriod" />
+                <ScalarProperty Name="EducationalPeriod" ColumnName="EducationalPeriod" />
+                <ScalarProperty Name="BatchSpace" ColumnName="BatchSpace" />
+                <ScalarProperty Name="BatchDate" ColumnName="BatchDate" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PinBatchMembers">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.PinBatchMember">
+              <MappingFragment StoreEntitySet="PinBatchMembers">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="CredentialId" ColumnName="CredentialId" />
+                <ScalarProperty Name="StudentId" ColumnName="StudentId" />
+                <ScalarProperty Name="DateUsed" ColumnName="DateUsed" />
+                <ScalarProperty Name="IsUsed" ColumnName="IsUsed" />
+                <ScalarProperty Name="PinData" ColumnName="PinData" />
+                <ScalarProperty Name="BatchId" ColumnName="BatchId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ResultRaws">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.ResultRaw">
+              <MappingFragment StoreEntitySet="ResultRaw">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="ScoreTotal" ColumnName="ScoreTotal" />
+                <ScalarProperty Name="ScoreObtained" ColumnName="ScoreObtained" />
+                <ScalarProperty Name="DateUploaded" ColumnName="DateUploaded" />
+                <ScalarProperty Name="FileId" ColumnName="FileId" />
+                <ScalarProperty Name="AssessmentId" ColumnName="AssessmentId" />
+                <ScalarProperty Name="SubjectId" ColumnName="SubjectId" />
+                <ScalarProperty Name="ClassId" ColumnName="ClassId" />
+                <ScalarProperty Name="SubSessionId" ColumnName="SubSessionId" />
+                <ScalarProperty Name="SessionId" ColumnName="SessionId" />
+                <ScalarProperty Name="CredentialId" ColumnName="CredentialId" />
+                <ScalarProperty Name="StudentId" ColumnName="StudentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Students">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.Student">
+              <MappingFragment StoreEntitySet="Student">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="BriefInformation" ColumnName="BriefInformation" />
+                <ScalarProperty Name="StudentImage" ColumnName="StudentImage" />
+                <ScalarProperty Name="PGPhone" ColumnName="PGPhone" />
+                <ScalarProperty Name="PGEmail" ColumnName="PGEmail" />
+                <ScalarProperty Name="PGFullName" ColumnName="PGFullName" />
+                <ScalarProperty Name="CurrentClassId" ColumnName="CurrentClassId" />
+                <ScalarProperty Name="StudentHomeAddress" ColumnName="StudentHomeAddress" />
+                <ScalarProperty Name="StudentOtherName" ColumnName="StudentOtherName" />
+                <ScalarProperty Name="StudentSurname" ColumnName="StudentSurname" />
+                <ScalarProperty Name="StudentId" ColumnName="StudentId" />
+                <ScalarProperty Name="AuuthCredentialId" ColumnName="AuuthCredentialId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StudentAttendances">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.StudentAttendance">
+              <MappingFragment StoreEntitySet="StudentAttendance">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="MarkedByCredentialId" ColumnName="MarkedByCredentialId" />
+                <ScalarProperty Name="ClassId" ColumnName="ClassId" />
+                <ScalarProperty Name="AttendanceStatus" ColumnName="AttendanceStatus" />
+                <ScalarProperty Name="AttendanceDate" ColumnName="AttendanceDate" />
+                <ScalarProperty Name="SubEducationalPeriodId" ColumnName="SubEducationalPeriodId" />
+                <ScalarProperty Name="EducationalPeriodId" ColumnName="EducationalPeriodId" />
+                <ScalarProperty Name="StudentId" ColumnName="StudentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StudentCommentFromTeachers">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.StudentCommentFromTeacher">
+              <MappingFragment StoreEntitySet="StudentCommentFromTeacher">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="CommentData" ColumnName="CommentData" />
+                <ScalarProperty Name="SubEducationalPeriod" ColumnName="SubEducationalPeriod" />
+                <ScalarProperty Name="EducationalPeriod" ColumnName="EducationalPeriod" />
+                <ScalarProperty Name="MarkedByCredentialId" ColumnName="MarkedByCredentialId" />
+                <ScalarProperty Name="StudentId" ColumnName="StudentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StudentRatings">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.StudentRating">
+              <MappingFragment StoreEntitySet="StudentRating">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="RatingDate" ColumnName="RatingDate" />
+                <ScalarProperty Name="RatingValue" ColumnName="RatingValue" />
+                <ScalarProperty Name="RatingType" ColumnName="RatingType" />
+                <ScalarProperty Name="SubEducationalPeriod" ColumnName="SubEducationalPeriod" />
+                <ScalarProperty Name="EducationalPeriod" ColumnName="EducationalPeriod" />
+                <ScalarProperty Name="MarkedByCredentialId" ColumnName="MarkedByCredentialId" />
+                <ScalarProperty Name="StudentId" ColumnName="StudentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StudentSubjectMaps">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.StudentSubjectMap">
+              <MappingFragment StoreEntitySet="StudentSubjectMap">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="DateAssigned" ColumnName="DateAssigned" />
+                <ScalarProperty Name="SubjectId" ColumnName="SubjectId" />
+                <ScalarProperty Name="StudentId" ColumnName="StudentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SubEducationalPeriods">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.SubEducationalPeriod">
+              <MappingFragment StoreEntitySet="SubEducationalPeriod">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="PeriodEnd" ColumnName="PeriodEnd" />
+                <ScalarProperty Name="PeriodStart" ColumnName="PeriodStart" />
+                <ScalarProperty Name="EducationalPeriodId" ColumnName="EducationalPeriodId" />
+                <ScalarProperty Name="SubPeriodOrder" ColumnName="SubPeriodOrder" />
+                <ScalarProperty Name="SubPeriodName" ColumnName="SubPeriodName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SubjectMaps">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.SubjectMap">
+              <MappingFragment StoreEntitySet="SubjectMap">
+                <ScalarProperty Name="DateAssigned" ColumnName="DateAssigned" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="SubjectId" ColumnName="SubjectId" />
+                <ScalarProperty Name="CredentialId" ColumnName="CredentialId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Transactions">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.Transaction">
+              <MappingFragment StoreEntitySet="Transaction">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="TransactionStatus" ColumnName="TransactionStatus" />
+                <ScalarProperty Name="SettlementTransactionRef" ColumnName="SettlementTransactionRef" />
+                <ScalarProperty Name="ResponseJson" ColumnName="ResponseJson" />
+                <ScalarProperty Name="RequestJson" ColumnName="RequestJson" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="CredentialId" ColumnName="CredentialId" />
+                <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UploadHistories">
+            <EntityTypeMapping TypeName="EdBox.DatabaseModel.UploadHistory">
+              <MappingFragment StoreEntitySet="UploadHistory">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="DateProcessEnd" ColumnName="DateProcessEnd" />
+                <ScalarProperty Name="DateProcessStart" ColumnName="DateProcessStart" />
+                <ScalarProperty Name="DateUploaded" ColumnName="DateUploaded" />
+                <ScalarProperty Name="ProcessingStatus" ColumnName="ProcessingStatus" />
+                <ScalarProperty Name="FileSize" ColumnName="FileSize" />
+                <ScalarProperty Name="OperationMessages" ColumnName="OperationMessages" />
+                <ScalarProperty Name="SystemFileName" ColumnName="SystemFileName" />
+                <ScalarProperty Name="RawFileName" ColumnName="RawFileName" />
+                <ScalarProperty Name="AssessmentId" ColumnName="AssessmentId" />
+                <ScalarProperty Name="ClassId" ColumnName="ClassId" />
+                <ScalarProperty Name="SubjectId" ColumnName="SubjectId" />
+                <ScalarProperty Name="CredentialId" ColumnName="CredentialId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GetStudentPosition" FunctionName="EdBox.DatabaseModel.Store.GetStudentPosition">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="EdBox.DatabaseModel.GetStudentPosition_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="StudentId" ColumnName="StudentId" />
+                <ScalarProperty Name="Score" ColumnName="Score" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

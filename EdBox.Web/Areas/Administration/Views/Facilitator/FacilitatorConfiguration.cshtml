@@ -1,0 +1,128 @@
+﻿
+@{
+    ViewBag.Title = "Facilitator Configuration for " + ViewBag.Username;
+    Layout = "~/Views/Shared/_ApplicationLayout.cshtml";
+}
+<div class="row">
+    <div class="col-md-9">
+        <h3>{{UserInformation.UserInformation.LastName}}, {{UserInformation.UserInformation.FirstName}}</h3>
+        <h5>Full Name</h5>
+    </div>
+    <div class="col-md-3">
+        <a class="btn btn-warning pull-right" href="@Url.Action("Index", "User")">Go Back</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Classes</h3>
+                <ul class="panel-controls">
+                    <li class="label-control"><span class="label label-info">Loaded {{UserInformation.TotalClasses}}</span></li>
+                </ul>
+            </div>
+            <div class="panel-body scroll" style="height: 200px;">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group" ng-repeat="mappedClass in UserInformation.MappedClasses track by $index">
+                        <label class="col-md-8 control-label">{{mappedClass.c.ClassName}}</label>
+                        <div class="col-md-4">
+                            <label class="switch switch-small">
+                                <input type="checkbox" ng-checked="mappedClass.MappingStatus" ng-change="UpdateMappedClass(mappedClass)" ng-model="mappedClass.MappingStatus" />
+                                <span></span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Subjects</h3>
+                <ul class="panel-controls">
+                    <li class="label-control"><span class="label label-info">Loaded {{UserInformation.TotalSubjects}}</span></li>
+                </ul>
+            </div>
+            <div class="panel-body scroll" style="height: 200px;">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group" ng-repeat="mappedSubject in UserInformation.MappedSubject track by $index">
+                        <label class="col-md-8 control-label">{{mappedSubject.s.ItemName}}</label>
+                        <div class="col-md-4">
+                            <label class="switch switch-small">
+                                <input type="checkbox" ng-checked="mappedSubject.MappingStatus" ng-change="UpdateMappedSubject(mappedSubject)" ng-model="mappedSubject.MappingStatus" />
+                                <span></span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+
+        edBox.controller('edBoxCtrlr', function($scope) {
+            $scope.UserInfromation = {};
+
+            $scope.LoadUser = function () {
+                window.notyDisplay('', 'Loading ...', 'warning');
+                var username = "@ViewBag.Username";
+
+                $.ajax({
+                        type: "GET",
+                        url: "/ApiUser/GetUser?username=" + username,
+                        async: false
+                    })
+                    .success(function(data) {
+                        if (data.Status === true) {
+                            $scope.UserInformation = data.Data;
+                            window.notyDisplay('', 'All Done', 'success');
+                        } else {
+                            window.notyDisplay('', data.Message, 'warning');
+                        }
+                    })
+                    .error(function(data) {
+                        window.notyEx();
+                    });
+            };
+            $scope.LoadUser();
+
+            $scope.UpdateMappedSubject = function(subject) {
+                $.ajax({
+                        type: "GET",
+                        url: "/ApiFacilitator/MapCredentialSubject?username=@ViewBag.Username&subjectId=" + subject.s.ItemId + "&state=" + subject.MappingStatus,
+                        async: false
+                    })
+                    .success(function(data) {
+                        if (data.Status === true) {
+                        } else {
+                            window.notyDisplay('', data.Message, 'warning');
+                        }
+                    })
+                    .error(function(data) {
+                        window.notyEx();
+                    });
+            };
+
+            $scope.UpdateMappedClass = function (classInfo) {
+                $.ajax({
+                    type: "GET",
+                    url: "/ApiFacilitator/MapCredentialClasses?username=@ViewBag.Username&classId=" + classInfo.c.Id + "&state=" + classInfo.MappingStatus,
+                    async: false
+                })
+                    .success(function (data) {
+                        if (data.Status === true) {
+                        } else {
+                            window.notyDisplay('', data.Message, 'warning');
+                        }
+                    })
+                    .error(function (data) {
+                        window.notyEx();
+                    });
+            };
+        });
+    </script>
+}

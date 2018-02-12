@@ -1,0 +1,289 @@
+﻿@using System.Linq
+@using EdBox.Core.EnumLib
+
+@model Student
+@{
+    ViewBag.Title = "Manage Students";
+    Layout = "~/Views/Shared/_ApplicationLayout.cshtml";
+    var data = new Entities();
+    var classes = data.Classes.Where(x => x.IsDeleted == false).OrderBy(x => x.ClassName).ToList();
+    var studentSubjectMap = data.StudentSubjectMaps.Where(x => x.IsDeleted == false && x.StudentId == Model.StudentId).ToList();
+    var sujects = EnumDictionary.GetList<Subjects>();
+    var maps = sujects.Select(
+        s =>
+            new
+            {
+                MappingStatus = studentSubjectMap.Any(x => x.SubjectId == s.ItemId),
+                ItemId = s.ItemId,
+                ItemName = s.ItemName
+            }).OrderBy(x => x.ItemName).ToList();
+}
+
+<div class="row">
+    <div class="col-md-3 col-sm-4 col-xs-5">
+        <form action="#" class="form-horizontal">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3><span class="fa fa-graduation-cap"></span> @Model.StudentSurname, @Model.StudentOtherName</h3>
+                    <div class="text-center" id="user_image">
+                        <img src="data:image/png;base64,@Model.StudentImage" class="img-thumbnail" />
+                    </div>
+                </div>
+                <div class="panel-body form-group-separated">
+                    <!--
+                    <div class="form-group">
+                        <div class="col-md-12 col-xs-12">
+                            <a href="#" class="btn btn-primary btn-block btn-rounded" data-toggle="modal" data-target="#modal_change_photo">Change Photo</a>
+                        </div>
+                    </div>-->
+
+                    <div class="form-group">
+                        <label class="col-md-3 col-xs-5 control-label">#ID</label>
+                        <div class="col-md-9 col-xs-7">
+                            <input type="text" value="@Model.StudentId" class="form-control" disabled />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-3 col-xs-5 control-label">Class</label>
+                        <div class="col-md-9 col-xs-7">
+                            <input type="text" value="@ViewBag.Class" class="form-control" disabled />
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+
+        <div class="panel panel-default form-horizontal">
+            <div class="panel-body">
+                <h3><span class="fa fa-user-secret"></span> Parent/Guardian Info</h3>
+            </div>
+            <div class="panel-body form-group-separated">
+                <div class="form-group">
+                    <label class="col-md-2 col-xs-2 control-label"><i class="fa fa-user"></i></label>
+                    <div class="col-md-8 col-xs-8 line-height-30">@Model.PGFullName</div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 col-xs-2 control-label"><i class="fa fa-envelope"></i></label>
+                    <div class="col-md-8 col-xs-8 line-height-30">@Model.PGEmail</div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 col-xs-2 control-label"><i class="fa fa-mobile"></i></label>
+                    <div class="col-md-8 col-xs-8">@Model.PGPhone</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-sm-8 col-xs-7">
+        <form id="validate" role="form" class="form-horizontal" action="javascript:updateStudentForm();">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3><span class="fa fa-pencil"></span> Edit Student Information</h3>
+                </div>
+                <div class="panel-body form-group-separated">
+                    <div class="form-group">
+                        <label class="col-md-3 col-xs-5 control-label">Surname</label>
+                        <div class="col-md-9 col-xs-7">
+                            <input type="text" id="surname" value="@Model.StudentSurname" class="validate[required,minSize[3]] form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 col-xs-5 control-label">Other Name</label>
+                        <div class="col-md-9 col-xs-7">
+                            <input type="text" id="otherName" value="@Model.StudentOtherName" class="validate[required,minSize[3]] form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 col-xs-5 control-label">Home Address</label>
+                        <div class="col-md-9 col-xs-7">
+                            <input type="text" id="homeAddress" value="@Model.StudentHomeAddress" class="validate[required,minSize[3]] form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 col-xs-5 control-label">New Class</label>
+                        <div class="col-md-9 col-xs-7">
+                            <select class="form-control select validate[required]" id="currentClass">
+                                <option value="0">- Select a Class -</option>
+                                @foreach (var cls in classes)
+                                {
+                                    <option value="@cls.Id">@cls.ClassName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 col-xs-5 control-label">About the Student</label>
+                        <div class="col-md-9 col-xs-7">
+                            <textarea class="form-control" id="briefInfo" rows="4">@Model.BriefInformation</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 col-xs-5">
+                            <div class="btn-group pull-right">
+                                <a href="@Url.Action("Index")" class="btn btn-warning">Back</a>
+                                <button class="btn btn-danger" type="button" onclick="deleteStudent()">Delete</button>
+                                <button class="btn btn-primary">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-3">
+        <div class="panel panel-default form-horizontal">
+            <div class="panel-body">
+                <h3><span class="fa fa-link"></span> Registered Subjects</h3>
+            </div>
+            <div class="panel-body scroll form-group-separated" style="height: 300px">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        @foreach (var map in maps)
+                        {
+                            <label class="col-md-8 control-label">@map.ItemName</label>
+                            <div class="col-md-4">
+                                <label class="switch switch-small">
+                                    @if (map.MappingStatus)
+                                    {
+                                        <input type="checkbox" onclick="unMapSubject(@map.ItemId)" checked="checked" />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" onclick="mapSubject(@map.ItemId)" />
+                                    }
+                                    <span></span>
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="modal_no_footer" tabindex="-1" role="dialog" aria-labelledby="defModalHead" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="defModalHead">Add Passport Image</h4>
+            </div>
+            <div class="modal-body">
+                <form action="@Url.Action("UploadImage", "ApiUtility", new {area=  ""})" method="post" enctype="multipart/form-data" class="dropzone dropzone-mini" id="dropzoneForm1">
+                    <div class="fallback">
+                        <input name="file" type="file" multiple />
+                        <input type="submit" value="Upload" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script>
+        edBox.controller('edBoxCtrlr', function ($scope) {
+
+            $scope.updateStudent = function () {
+
+                var studentInformation = {
+                    StudentSurname: $('#surname').val(),
+                    StudentOtherName: $('#otherName').val(),
+                    StudentHomeAddress: $('#homeAddress').val(),
+                    BriefInformation: $('#briefInfo').val(),
+                    CurrentClassId: $('#currentClass').val(),
+                    StudentId: '@Model.StudentId'
+                };
+
+                $.ajax({
+                        type: "POST",
+                        url: "/ApiRegistration/UpdateRegistration",
+                        async: false,
+                        data: studentInformation
+                    })
+                    .success(function(data) {
+                        if (data.Status === true) {
+
+                            $('#surname').val('');
+                            $('#otherName').val('');
+                            $('#homeAddress').val('');
+                            $('#briefInfo').val('');
+                            $('#currentClass').val(0);
+                            Dropzone.forElement("#dropzoneForm1").removeAllFiles(true);
+
+                            window.notyDisplay('', data.Message, 'success');
+                            window.location = '@Url.Action("ManageStudents")?studentId=' + @Model.StudentId;
+                        } else {
+                            window.notyDisplay('', data.Message, 'warning');
+                        }
+                    })
+                    .error(function(data) {
+                        window.notyEx();
+                    });
+            };
+        });
+
+        function unMapSubject(subjectId) {
+            updateMappedSubject(subjectId, false);
+        };
+
+        function deleteStudent() {
+            var deleteStudentApi = "/ApiRegistration/DeleteRegistration?studentId=@Model.StudentId";
+            window.notyConfirmApiCall(deleteStudentApi, "You are about delete this Student. Are you REALLY sure about this?", redirectToIndex);
+        };
+
+        function redirectToIndex() {
+            window.location = '@Url.Action("Index", "Registration", new {area = "Registrar"})';
+        };
+
+        function mapSubject(subjectId) {
+            updateMappedSubject(subjectId, true);
+        };
+
+        function updateMappedSubject(subjectId, newValue) {
+            $.ajax({
+                    type: "GET",
+                    url: "/ApiRegistration/ManageSubjects?studentId=@Model.StudentId&subjectId=" + subjectId + "&newValue=" + newValue,
+                    async: true
+                })
+                .success(function(data) {
+                    if (data.Status === true) {
+                        window.notyDisplay('', data.Message, 'success');
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function(data) {
+                    window.notyEx();
+                });
+        };
+
+        function updateStudentForm() {
+            getNgScope().updateStudent();
+        };
+
+        Dropzone.options.dropzoneForm1 = {
+            maxFiles: 1,
+            maxFilesize: 100,
+            acceptedFiles: ".jpeg,.jpg,.png,.gif",
+            init: function() {
+                this.on("maxfilesexceeded", function(data) {
+                    window.notyDisplay('', data.Message, 'warning');
+                });
+
+                this.on("success", function(data) {
+                    window.notyDisplay('', 'File has been Uploaded Sucessfully', 'success');
+                    $('#passportImage').val(data.name);
+                });
+            }
+        };
+    </script>
+}

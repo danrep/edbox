@@ -1,0 +1,28 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+<head>
+    <title>EdBox - Messenger</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <link rel="stylesheet" type="text/css" id="theme" href="/ViewElements/css/theme-default.css"/>
+</head>
+<body>
+<div class="error-container">
+    @{var imageBytes = File.ReadAllBytes(Server.MapPath("~/ViewElements/img/EdBoxLogo.png"));}
+    <img alt="logo" src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes)" class="center-block" />
+    <div class="error-text" style="padding: 10px">{title}</div>
+    <hr class="btn btn-danger btn-block btn-xs"/>
+    <div>{message}</div>
+</div>
+</body>
+
+</html>

@@ -1,0 +1,83 @@
+﻿
+@model int
+@{
+    Layout = null;
+    ViewBag.Title = "Bulk Result Print: ";
+
+    var data = new Entities();
+    var students = data.Students.Where(x => x.IsDeleted == false && x.CurrentClassId == Model)
+        .OrderBy(x => x.StudentSurname)
+        .ThenBy(x => x.StudentOtherName).ToList();
+
+    var classInfo = data.Classes.FirstOrDefault(x => x.Id == Model);
+
+    Session["IsSession"] = false;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bulk Print Result: @classInfo?.ClassName</title>
+    <meta name="viewport" content="width=device-width"/>
+    <link rel="icon" href="/ViewElements/img/EdBoxLogoOnly.png" type="image/x-icon"/>
+    <link rel="stylesheet" type="text/css" media="all" id="theme" href="/ViewElements/css/theme-default.css"/>
+
+    <style media="all">
+        html { overflow: hidden; }
+         body {
+             height: 297mm;
+            width: 210mm;
+            zoom: 100%;
+            margin-left: auto;
+            margin-right: auto;
+         }
+
+        .h6 {
+            font-weight: 100;
+        }
+
+        .tableDiv {
+            vertical-align: top;
+        }
+
+        th.rotate {
+            /* Something you can count on */
+            height: 150px;
+            white-space: nowrap;
+        }
+
+        th.rotate > div {
+            transform: translate(-5px, 0px) rotate(270deg);
+            width: 10px;
+        }
+
+        th.rotate > div > span {
+            border-bottom: 1px solid #ccc;
+            padding: 5px 10px;
+        }
+
+        .csstransforms, th.rotate {
+            height: 150px;
+            white-space: nowrap;
+        }
+
+        tbody > tr > td {
+            padding: 4px 7px !important;
+        }
+
+        .pageBreak {
+            page-break-after: always;
+        }
+    </style>
+</head>
+<body>
+@foreach (var student in students)
+{
+    <div class="pageBreak">
+        @Html.Partial("~/Areas/StudentManagement/Views/Results/PrintResult.cshtml", student)
+    </div>
+
+    <hr />
+}
+</body>
+</html>

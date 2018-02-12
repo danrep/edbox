@@ -1,0 +1,91 @@
+﻿@{
+    ViewBag.Title = "Registration Overview";
+    Layout = "~/Views/Shared/_ApplicationLayout.cshtml";
+}
+
+<div class="panel panel-default">
+    <div class="input-group">
+        <span class="input-group-addon"><span class="fa fa-search"></span></span>
+        <input type="text" id="searchQuery" class="form-control" placeholder="enter text to search" onkeyup="loadRegistrants()" />
+    </div>
+    <div class="panel-heading">
+        <h4 class="panel-title">Registered Users</h4>
+        <div class="btn-group pull-right">
+            <a href="@Url.Action("AddStudent", "Registration")" class="btn btn-info"><span class="fa fa-user-plus"></span> Add Registrant</a>
+            <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i> Export Data</button>
+            <ul class="dropdown-menu">
+                <li><a href="#" onClick="$('#studentInformation').tableExport({ type: 'excel', escape: 'false' });"><img src='/ViewElements/img/icons/xls.png' width="24" /> XLS</a></li>
+                <li><a href="#" onClick="$('#studentInformation').tableExport({ type: 'pdf', escape: 'false' });"><img src='/ViewElements/img/icons/pdf.png' width="24" /> PDF</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table id="studentInformation" class="table table-responsive">
+                <thead>
+                    <tr>
+                        <th>Student Id</th>
+                        <th>Surname</th>
+                        <th>Other Name(s)</th>
+                        <th>Current Class</th>
+                        <th><i class="fa fa-image"></i></th>
+                        <th>Control</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        edBox.controller('edBoxCtrlr', function ($scope) {
+        });
+
+        function loadRegistrants() {
+            window.notyDisplay('', 'Loading ...', 'warning');
+            $("#studentInformation tbody tr").remove();
+
+            $.ajax({
+                type: "GET",
+                url: "/ApiRegistration/GetRegistrants?queryString=" + $('#searchQuery').val(),
+                async: true
+            })
+                .success(function (data) {
+                    if (data.Status === true) {
+                        $.each(data.Data, function (i, datum) {
+                            var rowData = '<tr><td>' + datum.s.StudentId + '</td>';
+                            rowData += '<td>' + datum.s.StudentSurname + '</td>';
+                            rowData += '<td>' + datum.s.StudentOtherName + '</td>';
+                            rowData += '<td>' + datum.CurrentClass + '</td>';
+                            rowData += '<td>';
+                            rowData += '...';
+                            rowData += '</td>';
+                            rowData += '<td>';
+                            rowData += '<button onclick="manageAssignments(\'' + datum.s.StudentId + '\')" class="btn btn-primary btn-condensed btn-sm"><span class="fa fa-link"></span></button>';
+                            rowData += '</td>';
+                            rowData += '</div></tr>';
+
+                            $("#studentInformation tbody").append(rowData);
+                        });
+
+                        $("#studentInformation").dataTable();
+                        window.notyDisplay('', 'All Done', 'success');
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function (data) {
+                    window.notyEx();
+                });
+        };
+        loadRegistrants();
+
+        function manageAssignments(studentId) {
+            var redirection = "@Url.Action("ManageStudents", "Registration")?studentId=" + studentId;
+            window.notyConfirmRedirect(redirection);
+        };
+    </script>
+}

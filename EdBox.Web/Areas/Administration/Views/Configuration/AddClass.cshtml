@@ -1,0 +1,68 @@
+﻿@{
+    ViewBag.Title = "Add Class";
+    Layout = "~/Views/Shared/_ApplicationLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <form id="validate" role="form" class="form-horizontal" action="javascript:addNewClassForm();">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>Class Configuration</h3>
+                    <div class="col-md-4 col-xs-12">
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Class Name:</label>
+                            <div class="col-md-9">
+                                <input type="text" id="className" class="validate[required,minSize[4]] form-control" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="btn-group pull-left">
+                                    <a class="btn btn-warning" href="@Url.Action("ClassMan", "Configuration")">Go Back</a>
+                                    <button class="btn btn-primary" type="submit">Add Class</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        edBox.controller('edBoxCtrlr', function ($scope) {
+
+            $scope.addNewClass = function () {
+
+                $.ajax({
+                        type: "GET",
+                        url: "/ApiConfiguration/AddClass?className=" + $('#className').val(),
+                        async: false
+                    })
+                    .success(function (data) {
+                        if (data.Status === true) {
+                            window.notyDisplay('', data.Message, 'success');
+
+                            $('#className').val('');
+                        } else {
+                            window.notyDisplay('', data.Message, 'warning');
+                        }
+                    })
+                    .error(function (data) {
+                        window.notyEx();
+                    });
+            };
+        });
+
+        function addNewClassForm() {
+            getNgScope().addNewClass();
+        };
+    </script>
+}

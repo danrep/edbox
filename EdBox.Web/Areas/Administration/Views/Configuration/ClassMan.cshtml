@@ -1,0 +1,82 @@
+﻿
+@{
+    ViewBag.Title = "Class Management";
+    Layout = "~/Views/Shared/_ApplicationLayout.cshtml";
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title">Configured Classes</h4>
+        <div class="btn-group pull-right">
+            <a href="@Url.Action("AddClass", "Configuration")" class="btn btn-info"><span class="fa fa-database"></span> Add New Class</a>
+            <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i> Export Data</button>
+            <ul class="dropdown-menu">
+                <li><a href="#" onClick="$('#userInformation').tableExport({ type: 'excel', escape: 'false' });"><img src='/ViewElements/img/icons/xls.png' width="24" /> XLS</a></li>
+                <li><a href="#" onClick="$('#userInformation').tableExport({ type: 'pdf', escape: 'false' });"><img src='/ViewElements/img/icons/pdf.png' width="24" /> PDF</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table id="classInformation" class="table table-responsive">
+                <thead>
+                    <tr>
+                        <th>Class Name</th>
+                        <th># of Facilitators</th>
+                        <th># of Students</th>
+                        <th>...</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        edBox.controller('edBoxCtrlr', function ($scope) {
+        });
+
+        function loadClasses() {
+            window.notyDisplay('', 'Loading ...', 'warning');
+            $("#classInformation tbody tr").remove();
+
+            $.ajax({
+                type: "GET",
+                url: "/ApiConfiguration/GetClasses",
+                async: false
+            })
+                .success(function (data) {
+                    if (data.Status === true) {
+
+                        $.each(data.Data, function (i, datum) {
+                            var rowData = '<tr><td>' + datum.c.ClassName + '</td>';
+                            rowData += '<td>' + datum.FacilitatorMappingCount + '</td>';
+                            rowData += '<td>' + datum.StudentMappingCount + '</td>';
+
+                            rowData += '<td><button onclick="deleteClass(\'' + datum.c.Id + '\')" class="btn btn-danger btn-condensed btn-sm"><span class="fa fa-trash"></span></button></td>';
+                            rowData += '</div></tr>';
+
+                            $("#classInformation tbody").append(rowData);
+                        });
+
+                        $("#classInformation").dataTable();
+                        window.notyDisplay('', 'All Done', 'success');
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function (data) {
+                    window.notyEx();
+                });
+        };
+        loadClasses();
+
+        function deleteClass(classId) {
+            var deleteApiCall = "/ApiConfiguration/DeleteClass?classId=" + classId;
+            window.notyConfirmApiCall(deleteApiCall, 'Are you sure you wish to Delete this Class', loadClasses);
+        };
+    </script>
+}

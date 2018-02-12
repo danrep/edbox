@@ -1,0 +1,35 @@
+﻿@using EdBox.Core
+@using EdBox.Core.EnumLib
+@using EdBox.Web.Models
+
+<li class="xn-title">Your Students</li>
+<li class="xn-openable">
+    <a href="#"><span class="fa fa-users"></span> <span class="xn-text">Students Control</span></a>
+    <ul>
+        @foreach (var student in UserInformation.StudentsList)
+        {
+            <li class="xn-openable">
+                <a href="#"><span class="fa fa-user"></span>&nbsp;@student.StudentSurname, @student.StudentOtherName.Substring(0, 1).ToUpper()</a>
+                @{
+                    var pinState = UserInformation.PinRegResultView(student.StudentId);
+                    if (pinState == PinState.PinRequiredFound || pinState == PinState.NoPinRequired)
+                    {
+                        <ul>
+                            <li><a href="@Url.Action("Index", "Results", new {area = "StudentManagement", studentId = student.StudentId})"><span class="fa fa-dashboard"></span>&nbsp;Result Overview</a></li>
+                        </ul>
+                        <ul>
+                            <li><a href="@Url.Action("PrintResult", "Results", new {area = "StudentManagement", studentId = student.StudentId, isSession = false, key = Encryption.SaltEncrypt(UserInformation.UserInformationCredential.Username, DateTime.Now.ToString("YYYYMMDD"))})" target="_blank"><span class="fa fa-print"></span>&nbsp;Sub Session Report Sheet</a></li>
+                        </ul>
+                    }
+
+                    if (UserInformation.PinRegResultView(student.StudentId) != PinState.NoPinRequired)
+                    {
+                        <ul>
+                            <li><a href="@Url.Action("Index", "PinManagement", new {area = "StudentManagement", studentId = student.StudentId})"><span class="fa fa-lock"></span>&nbsp;Pin Management</a></li>
+                        </ul>
+                    }
+                }
+            </li>
+        }
+    </ul>
+</li>

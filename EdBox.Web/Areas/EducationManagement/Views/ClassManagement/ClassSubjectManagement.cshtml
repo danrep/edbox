@@ -1,0 +1,209 @@
+﻿@using EdBox.Core.EnumLib
+@model EdBox.Web.Areas.EducationManagement.Models.ClassSubjectManagement
+@{
+    ViewBag.Title = "Class Subject Management";
+    Layout = "~/Views/Shared/_ApplicationLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-4 col-xs-12">
+        <div class="col-md-12">
+            <div class="widget widget-success widget-item-icon">
+                <div class="widget-item-left">
+                    <span class="fa fa-graduation-cap"></span>
+                </div>
+                <div class="widget-data">
+                    <div class="widget-int num-count">@Model.ClassName @Model.SubjectName</div>
+                    <div class="widget-title"></div>
+                    <div class="widget-subtitle">Date Created: @Model.ClassSubject.DateCreated.ToLongDateString()</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-xs-12">
+
+    </div>
+    <div class="col-md-4 col-xs-12">
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">Configured Class Subject Members</h3>
+                <div class="btn-group pull-right">
+                    <a href="@Url.Action("Index", "ClassManagement")" class="btn btn-warning"><span class="fa fa-backward"></span> Go Back</a>
+                    @if (Model.ClassSubject.IsActivated)
+                    {
+                        <button class="btn disabled btn-success">Activated</button>
+                    }
+                    else
+                    { <button class="btn btn-primary" onclick="activateClassSubject()">Activate</button>}
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-3 col-xs-12">
+                    <form id="validate" role="form" class="form-horizontal" action="javascript:submitForm();">
+                        <div class="form-group">
+                            <label class="col-md-12 control-label">Assessment Name</label>
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="fa fa-file-text"></span></span>
+                                    <input type="text" id="assessmentName" class="validate[required,minSize[3]] form-control" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-12 control-label">Assessment Percentage</label>
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><span class="fa fa-sort-numeric-asc"></span></span>
+                                    <input type="number" id="assessmentPercentage" class="validate[required,minSize[2]] form-control" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-12 control-label">Select Assessment Type</label>
+                            <div class="col-md-12">
+                                <select class="form-control select validate[required]" id="assessmentType">
+                                    <option value="0">- Select an Assessment Type -</option>
+                                    @foreach (var role in EnumDictionary.GetList<AssessmentType>())
+                                    {
+                                        <option value="@role.ItemId">@role.ItemName</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        @if (!Model.ClassSubject.IsActivated)
+                        {
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary pull-right">Save</button>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <span class="btn btn-success disabled pull-right">Activated</span>
+                                </div>
+                            </div>
+                        }
+                    </form>
+                </div>
+                <div class="col-md-9 col-xs-12">
+                    <div class="table-responsive">
+                        <table id="assessment" class="table table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>Assessment Name</th>
+                                    <th>Assessment Type</th>
+                                    <th>Contribution</th>
+                                    <th>...</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script>
+        edBox.controller('edBoxCtrlr', function($scope) {
+        });
+
+        function loadAssessments() {
+            window.notyDisplay('', 'Loading ...', 'warning');
+            $("#assessment tbody tr").remove();
+
+            $.ajax({
+                    type: "GET",
+                    url: "/ApiClassManagement/GetAssessments?classSubjectId=" + @Model.ClassSubject.Id,
+                    async: true
+                })
+                .success(function(data) {
+                    if (data.Status === true) {
+
+                        $.each(data.Data, function(i, datum) {
+                            var rowData = '<tr><td>' + datum.c.MemberResultName + '</td>';
+                            rowData += '<td>' + datum.AssessmentType + '</td>';
+                            rowData += '<td>' + datum.c.TotalContributedMark + '%</td>';
+                            rowData += '<td>';
+
+                            if (data.IsActivated === false) {
+                                rowData += '<button class="btn btn-danger btn-sm" onclick="removeAssessment(' + datum.c.Id + ')"><i class="fa fa-trash"></i></button>';
+                            }
+
+                            rowData += '</td>';
+                            rowData += '</div></tr>';
+
+                            $("#assessment tbody").append(rowData);
+                        });
+
+                        $("#assessment").dataTable();
+                        window.notyDisplay('', 'All Done', 'success');
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function(data) {
+                    window.notyEx();
+                });
+        };
+
+        loadAssessments();
+
+        function submitForm() {
+            if ($('#assessmentType').val() === '0') {
+                window.notyDisplay('', 'Please Select a Valid Assessment Type', 'warning');
+                return;
+            }
+
+            window.notyDisplay('', 'Working on it ...', 'warning');
+
+            $.ajax({
+                    type: "GET",
+                    url: "/ApiClassManagement/AddAssessment?classSubjectId=" + @Model.ClassSubject.Id
+                        + "&assessmentName=" + $('#assessmentName').val()
+                        + "&assessmentType=" + $('#assessmentType').val()
+                        + "&assessmentPercentage=" + $('#assessmentPercentage').val(),
+                    async: false
+                })
+                .success(function(data) {
+                    if (data.Status === true) {
+                        loadAssessments();
+
+                        $('#assessmentName').val('');
+                        $('#assessmentPercentage').val('');
+                        $('#assessmentType').val('0');
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function(data) {
+                    window.notyEx();
+                });
+        };
+
+        function removeAssessment(assessmentId) {
+            var deleteApiCall = "/ApiClassManagement/RemoveAssessment?assessmentId=" + assessmentId;
+            window.notyConfirmApiCall(deleteApiCall, 'Are you sure you wish to Delete this Assessment?', loadAssessments);
+        }
+
+        function activateClassSubject() {
+            var activateApiCall = "/ApiClassManagement/ActivateClassSubject?classSubjectId=" + @Model.ClassSubject.Id;
+            window.notyConfirmApiCall(activateApiCall, 'Are you sure you wish to Activate this Class Subject? This Process is not Reversible', loadAssessments);
+            window.location = "@Url.Action("ClassSubjectManagement", "ClassManagement")?classSubjectId=" + @Model.ClassSubject.Id;
+        }
+    </script>
+}

@@ -1,0 +1,62 @@
+﻿@model PinBatchMember
+@{
+    ViewBag.Title = "Pin Management";
+    Layout = "~/Views/Shared/_ApplicationLayout.cshtml";
+}
+
+@if (Model == null)
+{
+    <div class="col-md-12">
+        <div class="panel panel-warning push-up-20">
+            <div class="panel-body panel-body-pricing">
+                <h2>Reminder! You have not entered a PIN yet. Please use the PIN you have received from the school</h2>
+                <hr/>
+                <div class="form-group">
+                    <label>PIN</label>
+                    <input type="password" id="pin" class="form-control input-lg" placeholder="Your PIN here">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-success" type="button" onclick="loadPin()">Load PIN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="col-md-12">
+        <div class="panel panel-success push-up-20">
+            <div class="panel-body panel-body-pricing">
+                <h2>Congratulations!</h2>
+                <h3>You have Registered a PIN and its Still Valid.</h3>
+                <hr/>
+                <p><span class="fa fa-caret-right"></span>PIN: @Model.PinData.ToString()</p>
+                <p><span class="fa fa-caret-right"></span>Date Installed: @Model.DateUsed.ToLongDateString() @Model.DateUsed.ToLongTimeString()</p>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts
+{
+    <script>
+        function loadPin() {
+            $.ajax({
+                    type: "GET",
+                    url: "/ApiStudentManagement/ProcessPin?studentId=@ViewBag.StudentId&pin=" + $('#pin').val(),
+                    async: true
+                })
+                .success(function(data) {
+                    if (data.Status === true) {
+                        window.notyDisplay('', data.Message, 'success');
+                        window.location = '@Url.Action("Index", "PinManagement", new {area = "StudentManagement"})?studentId=@ViewBag.StudentId';
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function(data) {
+                    window.notyEx();
+                });
+        };
+    </script>
+}

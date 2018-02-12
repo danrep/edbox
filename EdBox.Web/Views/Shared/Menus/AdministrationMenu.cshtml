@@ -1,0 +1,27 @@
+﻿
+<li class="xn-openable">
+    <a href="#"><span class="fa fa-users"></span> <span class="xn-text">User Administration</span></a>
+    <ul>
+        <li>
+            <a href="@Url.Action("Index", "User", new {area = "Administration"})"><span class="fa fa-user"></span>User Data Management</a>
+        </li>
+        <!--
+        <li><a href="@Url.Action("Index", "Facilitator", new {area = "Administration"})"><span class="fa fa-user-secret"></span> Facilitator Overviews</a></li>-->
+    </ul>
+</li>
+<li class="xn-openable">
+    <a href="#"><span class="fa fa-cogs"></span> <span class="xn-text">Configurations</span></a>
+    <ul>
+        <li><a href="@Url.Action("Index", "Configuration", new {area = "Administration"})"><span class="fa fa-database"></span> Configuration Central</a></li>
+        <li><a href="@Url.Action("AssessmentMan", "Configuration", new {area = "Administration"})"><span class="fa fa-database"></span> Assessment Management</a></li>
+        <li><a href="@Url.Action("ClassMan", "Configuration", new {area = "Administration"})"><span class="fa fa-database"></span> Class Management</a></li>
+        <li><a href="@Url.Action("SessMan", "Configuration", new {area = "Administration"})"><span class="fa fa-database"></span> Session Management</a></li>
+        <li><a href="@Url.Action("SubSessMan", "Configuration", new {area = "Administration"})"><span class="fa fa-database"></span> Sub Session Management</a></li>
+    </ul>
+</li>
+<li class="xn-openable">
+    <a href="#"><span class="fa fa-lock"></span> <span class="xn-text">Secure Data</span></a>
+    <ul>
+        <li><a href="@Url.Action("PinManagement", "SecureData", new {area = "Administration"})"><span class="fa fa-key"></span> PIN Management</a></li>
+    </ul>
+</li>

@@ -1,0 +1,68 @@
+﻿@model int
+@{
+    ViewBag.Title = "Display Uploaded Data";
+    Layout = "~/Views/Shared/_ApplicationLayout.cshtml";
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title">Uploaded Data</h4>
+        <div class="btn-group pull-right">
+            <a class="btn btn-warning" href="@Url.Action("Index", "ResultManagement")?assessmentId=@Model"> Back</a>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table id="studentInformation" class="table table-responsive">
+                <thead>
+                    <tr>
+                        <th>Student Id</th>
+                        <th>Score</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        edBox.controller('edBoxCtrlr', function ($scope) {
+        });
+
+        function loadRegistrants() {
+            window.notyDisplay('', 'Loading ...', 'warning');
+            $("#studentInformation tbody tr").remove();
+
+            $.ajax({
+                type: "GET",
+                url: "/ApiResultManagement/GetUploadedResults?assessmentId=@Model&subjectId=@ViewBag.SubjectId&classId=@ViewBag.ClassId",
+                async: true
+            })
+                .success(function (data) {
+                    if (data.Status === true) {
+                        $.each(data.Data, function (i, datum) {
+                            var rowData = '<tr><td>' + datum.StudentId + '</td>';
+                            rowData += '<td>' + datum.ScoreObtained + '/' + datum.ScoreTotal + '</td>';
+                            rowData += '<td>' + ((datum.ScoreObtained / datum.ScoreTotal) * 100).toFixed(2) + '%</td>';
+                            rowData += '</div></tr>';
+
+                            $("#studentInformation tbody").append(rowData);
+                        });
+
+                        $("#studentInformation").dataTable();
+                        window.notyDisplay('', 'All Done', 'success');
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function (data) {
+                    window.notyEx();
+                });
+        };
+        loadRegistrants();
+    </script>
+}

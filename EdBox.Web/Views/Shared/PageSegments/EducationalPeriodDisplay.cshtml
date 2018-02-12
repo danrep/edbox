@@ -1,0 +1,60 @@
+﻿<div class="row">
+    @{
+        var data = new Entities();
+        var currentSession = data.EducationalPeriods.FirstOrDefault(x => x.IsActive == true);
+    }
+
+    @if (currentSession != null)
+    {
+        var currentSubSession = data.SubEducationalPeriods.FirstOrDefault(x => x.EducationalPeriodId == currentSession.Id && x.IsActive == true);
+
+        <div class="col-md-6 col-xs-12">
+            <div class="widget widget-success">
+                <div class="widget-title">Current Session</div>
+                <div class="widget-subtitle">From @currentSession.PeriodStart.ToLongDateString()</div>
+                <div class="widget-int"><span data-toggle="counter" data-to="1564">@currentSession.PeriodName</span></div>
+                <div class="widget-controls">
+                    <a href="@Url.Action("SessMan", "Configuration")" class="widget-control-right"><span class="fa fa-cogs"></span></a>
+                </div>
+            </div>
+        </div>
+
+        if (currentSubSession != null)
+        {
+            <div class="col-md-6 col-xs-12">
+                <div class="widget widget-success">
+                    <div class="widget-title">Current Sub Session</div>
+                    <div class="widget-subtitle">From @currentSubSession.PeriodStart.ToLongDateString()</div>
+                    <div class="widget-int"><span data-toggle="counter" data-to="1564">@currentSubSession.SubPeriodName</span></div>
+                    <div class="widget-controls">
+                        <a href="@Url.Action("SubSessMan", "Configuration")" class="widget-control-right"><span class="fa fa-cogs"></span></a>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-md-6 col-xs-12">
+                <div class="widget widget-danger">
+                    <div class="widget-title"><span class="fa fa-2x fa-warning text-warning"></span></div>
+                    <div class="widget-int">No Current Sub Session Set Yet</div>
+                    <div class="widget-controls">
+                        <a href="@Url.Action("SubSessMan", "Configuration")" class="widget-control-right"><span class="fa fa-cogs"></span></a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-md-6 col-xs-12">
+            <div class="widget widget-danger">
+                <div class="widget-title"><span class="fa fa-2x fa-warning text-warning"></span></div>
+                <div class="widget-int">No Current Session Set Yet</div>
+                <div class="widget-controls">
+                    <a href="@Url.Action("SessMan", "Configuration")" class="widget-control-right"><span class="fa fa-cogs"></span></a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

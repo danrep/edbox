@@ -1,0 +1,62 @@
+﻿
+@{
+    ViewBag.Title = "Log In";
+    Layout = "~/Views/Shared/_SecurityLayout.cshtml";
+}
+
+<div class="login-container">
+    <div class="login-box animated fadeInDown">
+        <div class="login-logo"></div>
+        <div class="login-body">
+            <div class="login-title">
+                <strong>Welcome</strong>, Please login
+            </div>
+            <form id="validate" role="form" class="form-horizontal" action="javascript:logIn();">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <input type="text" id="username" class="validate[required,minSize[5]] form-control" placeholder="Username" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <input type="password" id="password" class="validate[required,minSize[5]] form-control" placeholder="Password" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-6">
+                        <a href="@Url.Action("ForgotPassword", "Home")" class="btn btn-link btn-block">Forgot your password?</a>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-info btn-block">Log In</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        function logIn() {
+            window.notyDisplay('', 'Just a moment... Checking the Records', 'success');
+
+            $.ajax({
+                    type: "GET",
+                    url: "/Home/LogIn?username=" + $('#username').val() + "&password=" + $('#password').val(),
+                    async: true
+                })
+                .success(function(data) {
+                    if (data.Status === true) {
+                        window.notyDisplay('', data.Message, 'success');
+                        window.location = '/' + data.Data.Route + '/Home/Index';
+                    } else {
+                        window.notyDisplay('', data.Message, 'warning');
+                    }
+                })
+                .error(function(data) {
+                    window.notyEx();
+                });
+        };
+    </script>
+}
