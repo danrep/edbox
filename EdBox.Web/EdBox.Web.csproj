@@ -58,7 +58,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="HiQPdf">
-      <HintPath>..\packages\Misc\HiQPdf.dll</HintPath>
+      <HintPath>..\..\..\..\..\Dropbox\Never Forget Codes\BIN\HiQPdf\HiQPdf.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.0.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.6\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
@@ -513,9 +513,6 @@
   <ItemGroup>
     <Content Include="Views\web.config" />
     <Content Include="packages.config" />
-    <Content Include="ApplicationInsights.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Views\Shared\_SecurityLayout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\ForgotPassword.cshtml" />
@@ -585,7 +582,6 @@
     <Content Include="Areas\StudentManagement\Views\PinManagement\Index.cshtml" />
     <Content Include="Areas\Administration\Views\SecureData\PinManagement.cshtml" />
     <Content Include="Areas\EducationManagement\Views\ResultManagement\BulkPrint.cshtml" />
-    <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -605,6 +601,7 @@
     <Folder Include="Areas\Registrar\Views\Shared\" />
     <Folder Include="Areas\StudentManagement\Models\" />
     <Folder Include="Areas\StudentManagement\Views\Shared\" />
+    <Folder Include="Properties\PublishProfiles\" />
     <Folder Include="UploadedFile\GeneratedFiles\" />
     <Folder Include="UploadedFile\UploadedResults\" />
     <Folder Include="Views\ApiSecureData\" />
