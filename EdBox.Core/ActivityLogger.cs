@@ -22,7 +22,7 @@ namespace EdBox.Core
             {
                 try
                 {
-                    var location = Setting.LogFolder;
+                    var location = System.Web.Hosting.HostingEnvironment.MapPath("~/logs");
 
                     var dirInfo = new DirectoryInfo(location);
                     if (!dirInfo.Exists)
